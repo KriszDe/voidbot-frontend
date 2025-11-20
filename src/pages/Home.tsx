@@ -137,7 +137,7 @@ function Navbar({
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">
         <a href="/" className="flex items-center gap-3">
           <Mark />
-          <span className="text-sm font-semibold tracking-wider text-white/90">VOIDBOT</span>
+          <span className="text-sm font-semibold tracking-wider text-white/90">FIVEM HUB</span>
         </a>
 
         <nav className="hidden gap-8 text-sm text-white/70 md:flex">
@@ -178,7 +178,7 @@ function Navbar({
                 <div className="my-1 h-px bg-white/10" />
                 <button
                   onClick={logout}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-white/90 transition hover:bg白/5"
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-white/90 transition hover:bg-white/5"
                 >
                   <LogoutIcon />
                   Kijelentkezés
@@ -357,6 +357,7 @@ function ActionGrid() {
     </div>
   );
 }
+
 /* ——— Saját Discord szerverek (owner=true) ——— */
 function MyGuilds() {
   const [loading, setLoading] = useState(true);
@@ -364,10 +365,12 @@ function MyGuilds() {
   const [guilds, setGuilds] = useState<DiscordGuild[]>([]);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem("fivemhub_token"));
 
+  // Figyeljük a token változását (login/logout más tabon is)
   useEffect(() => {
     const onAuth = () => setToken(localStorage.getItem("fivemhub_token"));
     const onStorage = (e: StorageEvent) => {
-      if (e.key === "fivemhub_token" || e.key === "fivemhub_user") setToken(localStorage.getItem("fivemhub_token"));
+      if (e.key === "fivemhub_token") setToken(localStorage.getItem("fivemhub_token"));
+      if (e.key === "fivemhub_user") setToken(localStorage.getItem("fivemhub_token"));
     };
     window.addEventListener("auth_changed", onAuth);
     window.addEventListener("storage", onStorage);
@@ -387,44 +390,39 @@ function MyGuilds() {
         const tk = token || localStorage.getItem("fivemhub_token");
         if (!tk) throw new Error("missing_token");
 
-        const API_BASE = (import.meta as any).env?.VITE_API_URL || "http://localhost:3000";
+        const API_BASE =
+          (import.meta as any).env?.VITE_API_URL || "http://localhost:3000";
 
         const res = await fetch(`${API_BASE}/api/discord/guilds`, {
           headers: { Authorization: `Bearer ${tk}` },
         });
 
-        const text = await res.text();
-
         if (!res.ok) {
-          // Ha 401: töröljük a helyi tokent (kényszerítjük a felhasználót újbóli belépésre)
+          // 401 esetén töröljük a rossz tokent, hogy új loginra kényszerítsen
           if (res.status === 401) {
             localStorage.removeItem("fivemhub_token");
             window.dispatchEvent(new Event("auth_changed"));
           }
-          // Mutassuk a backend/discord pontos üzenetét, hogy debugolni tudjunk
-          throw new Error(`Discord API hiba (${res.status}): ${text}`);
+          const txt = await res.text().catch(() => "");
+          throw new Error(`GUILDS_${res.status}_${txt || ""}`);
         }
 
-        const data: DiscordGuild[] = JSON.parse(text);
+        const data: DiscordGuild[] = await res.json();
         if (!mounted) return;
 
-        // Kizárólag azok a szerverek, ahol owner === true (te hoztad létre)
-        const owners = data.filter((g) => g.owner);
-        setGuilds(owners);
-      } catch (e: any) {
+        setGuilds(data.filter((g) => g.owner));
+      } catch {
         if (!mounted) return;
-        console.error("MyGuilds error:", e);
-        // Felhasználóbarát és debug üzenet egyszerre
         setErr(
-          typeof e.message === "string" && e.message.includes("Discord API hiba")
-            ? `Nem sikerült betölteni a szervereket. Részlet: ${e.message}`
-            : "Nem sikerült betölteni a szervereket. Ellenőrizd, hogy az OAuth tartalmazza a „guilds” scope-ot, illetve hogy a token érvényes."
+          "Nem sikerült betölteni a szervereket. Ellenőrizd, hogy az OAuth tartalmazza a „guilds” scope-ot."
         );
       } finally {
         if (mounted) setLoading(false);
       }
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [token]);
 
   if (loading) {
@@ -439,24 +437,13 @@ function MyGuilds() {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
         <h3 className="text-lg font-bold">Szervereim</h3>
-        <p className="mt-1 text-rose-300 break-words">{err}</p>
-        <div className="mt-3 flex gap-2">
-          <button
-            onClick={() => setToken(localStorage.getItem("fivemhub_token"))}
-            className="rounded-lg border border-white/15 px-3 py-1.5 text-sm transition hover:bg-white/5"
-          >
-            Újrapróbálás
-          </button>
-          <button
-            onClick={() => {
-              // segítség gomb: megmutatjuk, mit kell ellenőrizni
-              alert("Ellenőrizd: OAuth scope tartalmazza a 'guilds'-t, és a Discord engedélyezésnél elfogadtad azt.");
-            }}
-            className="rounded-lg border border-white/15 px-3 py-1.5 text-sm transition hover:bg-white/5"
-          >
-            Mit ellenőrizzek?
-          </button>
-        </div>
+        <p className="mt-1 text-rose-300">{err}</p>
+        <button
+          onClick={() => setToken(localStorage.getItem("fivemhub_token"))}
+          className="mt-3 rounded-lg border border-white/15 px-3 py-1.5 text-sm transition hover:bg-white/5"
+        >
+          Újrapróbálás
+        </button>
       </div>
     );
   }
@@ -468,7 +455,6 @@ function MyGuilds() {
         <p className="mt-1 text-white/70">
           Nem találtunk olyan szervert, amelynek te vagy a tulaja.
         </p>
-        <p className="mt-2 text-sm text-white/60">(Győződj meg róla, hogy a Discord-on tulajdonos vagy, és ugyanazzal a fiókkal léptél be.)</p>
       </div>
     );
   }
@@ -493,17 +479,10 @@ function MyGuilds() {
   );
 }
 
-/* GuildCard: "Kezelés" -> "Bot hozzáadás" (invite link) */
 function GuildCard({ guild }: { guild: DiscordGuild }) {
   const iconUrl = guild.icon
     ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=128`
     : `https://cdn.discordapp.com/embed/avatars/0.png`;
-
-  // Invite URL: cseréld ki a CLIENT_ID-t a saját botod client id-jére vagy tedd env-be
-  const CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID || "YOUR_BOT_CLIENT_ID";
-  // permissions szám: állítsd be, milyen jogokat kér a bot (például 8 = Administrator, inkább konkrét perms ajánlott)
-  const PERMISSIONS = "8"; // ide lehet más számot tenni
-  const inviteUrl = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=bot%20applications.commands&permissions=${PERMISSIONS}&guild_id=${guild.id}&disable_guild_select=true`;
 
   return (
     <li className="rounded-xl border border-white/10 bg-white/[0.02] p-4 transition hover:bg-white/[0.05]">
@@ -517,12 +496,10 @@ function GuildCard({ guild }: { guild: DiscordGuild }) {
 
       <div className="mt-4 flex items-center gap-2">
         <a
-          href={inviteUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={`/server/${guild.id}`}
           className="rounded-lg border border-white/15 px-3 py-1.5 text-sm transition hover:bg-white/5"
         >
-          Bot hozzáadás
+          Kezelés
         </a>
         <a
           href={`/server/${guild.id}/promote`}
@@ -654,27 +631,6 @@ function CartIcon() {
     </svg>
   );
 }
-function PublishIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-      <path d="M5 20h14v-2H5v2zM12 2l5 5h-3v6h-4V7H7l5-5z" />
-    </svg>
-  );
-}
-function UsersIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-      <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V20h14v-3.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V20h6v-3.5c0-2.33-4.67-3.5-7-3.5z" />
-    </svg>
-  );
-}
-function CodeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-      <path d="M9.4 16.6L5.8 13l3.6-3.6L8 8l-5 5 5 5 1.4-1.4zm5.2 0L18.2 13l-3.6-3.6L16 8l5 5-5 5-1.4-1.4z" />
-    </svg>
-  );
-}
 function UserIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
@@ -684,16 +640,22 @@ function UserIcon() {
 }
 function CogIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0  0 0-.6-.22l-2.39.96a7.007 7.007 0 0 0-1.63-.94l-.36-2.54A.5.5 0 0 0 14.3 1h-4.6a.5.5 0 0 0-.49.41l-.36 2.54c-.58.24-1.12.55-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 7.02a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.14.24.43.34.68.22l2.39-.96c.51.39 1.05.7 1.63.94l.36 2.54c.06.24.26.41.49.41h4.6c.24 0 .44-.17.49-.41l.36-2.54c.58-.24 1.12-.55 1.63-.94l2.39.96c.26.1.55 0  .68-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"/></svg>
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+      <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0  0 0-.6-.22l-2.39.96a7.007 7.007 0 0 0-1.63-.94l-.36-2.54A.5.5 0 0 0 14.3 1h-4.6a.5.5 0 0 0-.49.41l-.36 2.54c-.58.24-1.12.55-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 7.02a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.14.24.43.34.68.22l2.39-.96c.51.39 1.05.7 1.63.94l.36 2.54c.06.24.26.41.49.41h4.6c.24 0 .44-.17.49-.41l.36-2.54c.58-.24 1.12-.55 1.63-.94l2.39.96c.26.1.55 0  .68-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"/>
+    </svg>
   );
 }
 function ShieldIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M12 2l8 3v6c0 5.25-3.438 9.75-8 11-4.562-1.25-8-5.75-8-11V5l8-3z"/></svg>
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+      <path d="M12 2l8 3v6c0 5.25-3.438 9.75-8 11-4.562-1.25-8-5.75-8-11V5l8-3z"/>
+    </svg>
   );
 }
 function LogoutIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M16 13v-2H7V8l-5 4 5 4v-3h9zM20 3h-8v2h8v14h-8v2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/></svg>
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+      <path d="M16 13v-2H7V8l-5 4 5 4v-3h9zM20 3h-8v2h8v14h-8v2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/>
+    </svg>
   );
 }
