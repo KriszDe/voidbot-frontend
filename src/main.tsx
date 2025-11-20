@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<App />} /> {/* fő oldal */}
         <Route path="/home" element={<Home />} />       {/* bejelentkezett oldal */}
-        <Route path="/auth/callback" element={<AuthCallback />} />
+       <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
