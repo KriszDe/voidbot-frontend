@@ -7,14 +7,17 @@ export default function App() {
   const handleDiscordLogin = () => {
     setLoading(true);
     const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
-    const redirect = encodeURIComponent(import.meta.env.VITE_DISCORD_REDIRECT as string); // http://localhost:5173/auth/callback
+    const redirect = encodeURIComponent(import.meta.env.VITE_DISCORD_REDIRECT as string);
     const scope = encodeURIComponent("identify guilds");
     const state = crypto.randomUUID();
-    sessionStorage.setItem("oauth_state", state);
-    window.location.href =
-      `https://discord.com/oauth2/authorize?client_id=${clientId}` +
-      `&response_type=code&redirect_uri=${redirect}&scope=${scope}` +
-      `&state=${encodeURIComponent(state)}&prompt=consent`;
+
+  sessionStorage.setItem("oauth_state", state);
+
+  window.location.href =
+  `https://discord.com/oauth2/authorize?client_id=${clientId}` +
+  `&response_type=code&redirect_uri=${redirect}` +
+  `&scope=${scope}&state=${encodeURIComponent(state)}&prompt=consent`;
+
   };
 
   return (

@@ -52,8 +52,9 @@ export default function AuthCallback() {
 
       try {
         // Fontos: a backendben a DISCORD_REDIRECT_URI-nek pontosan egyeznie kell ezzel.
-        const redirect_uri = `${window.location.origin}/auth/callback`;
-        const data = await postJSON<DiscordAuthResponse>("/api/auth/discord", { code, redirect_uri });
+    const redirect_uri = import.meta.env.VITE_DISCORD_REDIRECT as string;
+    const data = await postJSON<DiscordAuthResponse>("/api/auth/discord", { code, redirect_uri });
+
 
         if (!data.user) {
           throw new Error(data.error_description || data.error || "missing_user");
