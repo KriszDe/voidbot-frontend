@@ -67,7 +67,7 @@ export default function App() {
               className="group relative inline-flex items-center gap-3 rounded-xl bg-white px-6 py-3 text-base font-semibold text-[#0b0d10] transition hover:-translate-y-px focus:outline-none focus:ring-2 focus:ring-white/30 active:translate-y-0"
             >
               <DiscordIcon className="h-6 w-6" />
-              {loading ? "Kapcsolódás..." : "Belépek Discorddal"}
+              {loading ? "Kapcsolódás..." : "Belépek Discorddal"}ń
               <span className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-black/10" />
             </button>
 
