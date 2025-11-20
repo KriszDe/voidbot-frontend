@@ -137,7 +137,7 @@ function Navbar({
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">
         <a href="/" className="flex items-center gap-3">
           <Mark />
-          <span className="text-sm font-semibold tracking-wider text-white/90">FIVEM HUB</span>
+          <span className="text-sm font-semibold tracking-wider text-white/90">VOIDBOT</span>
         </a>
 
         <nav className="hidden gap-8 text-sm text-white/70 md:flex">
@@ -357,7 +357,6 @@ function ActionGrid() {
     </div>
   );
 }
-
 /* ——— Saját Discord szerverek (owner=true) ——— */
 function MyGuilds() {
   const [loading, setLoading] = useState(true);
@@ -365,12 +364,10 @@ function MyGuilds() {
   const [guilds, setGuilds] = useState<DiscordGuild[]>([]);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem("fivemhub_token"));
 
-  // Figyeljük a token változását (login/logout más tabon is)
   useEffect(() => {
     const onAuth = () => setToken(localStorage.getItem("fivemhub_token"));
     const onStorage = (e: StorageEvent) => {
-      if (e.key === "fivemhub_token") setToken(localStorage.getItem("fivemhub_token"));
-      if (e.key === "fivemhub_user") setToken(localStorage.getItem("fivemhub_token"));
+      if (e.key === "fivemhub_token" || e.key === "fivemhub_user") setToken(localStorage.getItem("fivemhub_token"));
     };
     window.addEventListener("auth_changed", onAuth);
     window.addEventListener("storage", onStorage);
@@ -390,39 +387,44 @@ function MyGuilds() {
         const tk = token || localStorage.getItem("fivemhub_token");
         if (!tk) throw new Error("missing_token");
 
-        const API_BASE =
-          (import.meta as any).env?.VITE_API_URL || "http://localhost:3000";
+        const API_BASE = (import.meta as any).env?.VITE_API_URL || "http://localhost:3000";
 
         const res = await fetch(`${API_BASE}/api/discord/guilds`, {
           headers: { Authorization: `Bearer ${tk}` },
         });
 
+        const text = await res.text();
+
         if (!res.ok) {
-          // 401 esetén töröljük a rossz tokent, hogy új loginra kényszerítsen
+          // Ha 401: töröljük a helyi tokent (kényszerítjük a felhasználót újbóli belépésre)
           if (res.status === 401) {
             localStorage.removeItem("fivemhub_token");
             window.dispatchEvent(new Event("auth_changed"));
           }
-          const txt = await res.text().catch(() => "");
-          throw new Error(`GUILDS_${res.status}_${txt || ""}`);
+          // Mutassuk a backend/discord pontos üzenetét, hogy debugolni tudjunk
+          throw new Error(`Discord API hiba (${res.status}): ${text}`);
         }
 
-        const data: DiscordGuild[] = await res.json();
+        const data: DiscordGuild[] = JSON.parse(text);
         if (!mounted) return;
 
-        setGuilds(data.filter((g) => g.owner));
-      } catch {
+        // Kizárólag azok a szerverek, ahol owner === true (te hoztad létre)
+        const owners = data.filter((g) => g.owner);
+        setGuilds(owners);
+      } catch (e: any) {
         if (!mounted) return;
+        console.error("MyGuilds error:", e);
+        // Felhasználóbarát és debug üzenet egyszerre
         setErr(
-          "Nem sikerült betölteni a szervereket. Ellenőrizd, hogy az OAuth tartalmazza a „guilds” scope-ot."
+          typeof e.message === "string" && e.message.includes("Discord API hiba")
+            ? `Nem sikerült betölteni a szervereket. Részlet: ${e.message}`
+            : "Nem sikerült betölteni a szervereket. Ellenőrizd, hogy az OAuth tartalmazza a „guilds” scope-ot, illetve hogy a token érvényes."
         );
       } finally {
         if (mounted) setLoading(false);
       }
     })();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [token]);
 
   if (loading) {
@@ -437,13 +439,24 @@ function MyGuilds() {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
         <h3 className="text-lg font-bold">Szervereim</h3>
-        <p className="mt-1 text-rose-300">{err}</p>
-        <button
-          onClick={() => setToken(localStorage.getItem("fivemhub_token"))}
-          className="mt-3 rounded-lg border border-white/15 px-3 py-1.5 text-sm transition hover:bg-white/5"
-        >
-          Újrapróbálás
-        </button>
+        <p className="mt-1 text-rose-300 break-words">{err}</p>
+        <div className="mt-3 flex gap-2">
+          <button
+            onClick={() => setToken(localStorage.getItem("fivemhub_token"))}
+            className="rounded-lg border border-white/15 px-3 py-1.5 text-sm transition hover:bg-white/5"
+          >
+            Újrapróbálás
+          </button>
+          <button
+            onClick={() => {
+              // segítség gomb: megmutatjuk, mit kell ellenőrizni
+              alert("Ellenőrizd: OAuth scope tartalmazza a 'guilds'-t, és a Discord engedélyezésnél elfogadtad azt.");
+            }}
+            className="rounded-lg border border-white/15 px-3 py-1.5 text-sm transition hover:bg-white/5"
+          >
+            Mit ellenőrizzek?
+          </button>
+        </div>
       </div>
     );
   }
@@ -455,6 +468,7 @@ function MyGuilds() {
         <p className="mt-1 text-white/70">
           Nem találtunk olyan szervert, amelynek te vagy a tulaja.
         </p>
+        <p className="mt-2 text-sm text-white/60">(Győződj meg róla, hogy a Discord-on tulajdonos vagy, és ugyanazzal a fiókkal léptél be.)</p>
       </div>
     );
   }
@@ -479,10 +493,17 @@ function MyGuilds() {
   );
 }
 
+/* GuildCard: "Kezelés" -> "Bot hozzáadás" (invite link) */
 function GuildCard({ guild }: { guild: DiscordGuild }) {
   const iconUrl = guild.icon
     ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=128`
     : `https://cdn.discordapp.com/embed/avatars/0.png`;
+
+  // Invite URL: cseréld ki a CLIENT_ID-t a saját botod client id-jére vagy tedd env-be
+  const CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID || "YOUR_BOT_CLIENT_ID";
+  // permissions szám: állítsd be, milyen jogokat kér a bot (például 8 = Administrator, inkább konkrét perms ajánlott)
+  const PERMISSIONS = "8"; // ide lehet más számot tenni
+  const inviteUrl = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=bot%20applications.commands&permissions=${PERMISSIONS}&guild_id=${guild.id}&disable_guild_select=true`;
 
   return (
     <li className="rounded-xl border border-white/10 bg-white/[0.02] p-4 transition hover:bg-white/[0.05]">
@@ -496,10 +517,12 @@ function GuildCard({ guild }: { guild: DiscordGuild }) {
 
       <div className="mt-4 flex items-center gap-2">
         <a
-          href={`/server/${guild.id}`}
+          href={inviteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           className="rounded-lg border border-white/15 px-3 py-1.5 text-sm transition hover:bg-white/5"
         >
-          Kezelés
+          Bot hozzáadás
         </a>
         <a
           href={`/server/${guild.id}/promote`}
