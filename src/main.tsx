@@ -6,7 +6,7 @@ import './index.css'
 
 import App from './App'
 import Home from './pages/Home'
-import AuthCallback from './pages/AuthCallback'
+import AuthCallback from './pages/AuthCallback.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
