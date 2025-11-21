@@ -388,10 +388,10 @@ function MyGuilds() {
         setErr(null);
 
         const tk = token || localStorage.getItem("fivemhub_token");
-        if (!tk) throw new Error("missing_token");
+        if (!tk) throw new Error("missing_token");  
 
-        const API_BASE =
-          (import.meta as any).env?.VITE_API_URL || "http://localhost:3000";
+
+      const API_BASE = import.meta.env.VITE_API_URL as string;
 
         const res = await fetch(`${API_BASE}/api/discord/guilds`, {
           headers: { Authorization: `Bearer ${tk}` },
