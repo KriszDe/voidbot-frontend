@@ -5,15 +5,31 @@ function App() {
 
   const pingBackend = async () => {
     try {
-      const API_BASE = import.meta.env.VITE_API_URL; // pl. https://api.voidbot.hu
-
+      const API_BASE = import.meta.env.VITE_API_URL;
       const res = await fetch(`${API_BASE}/api/health`);
       const data = await res.json();
-
       setBackendResponse(JSON.stringify(data, null, 2));
     } catch (err: any) {
       setBackendResponse("Hiba: " + err.message);
     }
+  };
+
+  const handleDiscordLogin = () => {
+    const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
+    const redirect = encodeURIComponent(
+      import.meta.env.VITE_DISCORD_REDIRECT as string
+    );
+    const scope = encodeURIComponent("identify guilds");
+    const responseType = "code";
+
+    const url =
+      `https://discord.com/oauth2/authorize` +
+      `?client_id=${clientId}` +
+      `&response_type=${responseType}` +
+      `&redirect_uri=${redirect}` +
+      `&scope=${scope}`;
+
+    window.location.href = url;
   };
 
   return (
@@ -27,9 +43,10 @@ function App() {
         justifyContent: "center",
         padding: "2rem",
         alignItems: "center",
+        gap: "1.5rem",
       }}
     >
-      <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>VOIDBOT – Alap Frontend</h1>
+      <h1 style={{ fontSize: "2rem" }}>VOIDBOT – Alap Frontend</h1>
 
       <button
         onClick={pingBackend}
@@ -41,15 +58,31 @@ function App() {
           fontWeight: "bold",
           border: "none",
           cursor: "pointer",
+          marginBottom: "0.5rem",
         }}
       >
         Ping Backend
       </button>
 
+      <button
+        onClick={handleDiscordLogin}
+        style={{
+          padding: "0.8rem 1.4rem",
+          background: "#5865F2",
+          borderRadius: "8px",
+          color: "white",
+          fontWeight: "bold",
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
+        Belépés Discorddal
+      </button>
+
       {backendResponse && (
         <pre
           style={{
-            marginTop: "2rem",
+            marginTop: "1.5rem",
             padding: "1rem",
             background: "#111",
             borderRadius: "8px",
