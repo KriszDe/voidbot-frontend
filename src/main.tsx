@@ -10,19 +10,12 @@ import AuthCallback from './pages/AuthCallback.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-
-        {/* Főoldal */}
-        <Route path="/" element={<App />} />
-
-        {/* Bejelentkezett oldal */}
-        <Route path="/home" element={<Home />} />
-
-        {/* Discord OAuth callback */}
-        <Route path="/auth/callback" element={<AuthCallback />} />
-
-      </Routes>
-    </BrowserRouter>
+   <BrowserRouter>
+  <Routes>
+    <Route path="/" element={<App />} />
+    <Route path="/home" element={<Home />} />
+    <Route path="/auth/callback" element={<AuthCallback />} />
+  </Routes>
+</BrowserRouter>
   </StrictMode>,
 )
