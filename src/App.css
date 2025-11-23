@@ -15,7 +15,6 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
 }
 
-/* PAGE WRAPPER */
 .bot-page {
   min-height: 100vh;
   display: flex;
@@ -23,9 +22,10 @@ body {
 }
 
 /* NAVBAR */
+
 .bot-navbar {
   height: 64px;
-  padding: 0 2.5rem;
+  padding: 0 5vw;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -37,13 +37,13 @@ body {
 .bot-nav-left {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.7rem;
 }
 
 .bot-logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .bot-logo-mark {
@@ -62,7 +62,8 @@ body {
 
 .bot-nav-links {
   display: flex;
-  gap: 1.2rem;
+  gap: 1.4rem;
+  font-size: 0.9rem;
 }
 
 .bot-nav-links a {
@@ -70,7 +71,7 @@ body {
   text-decoration: none;
   padding-bottom: 3px;
   border-bottom: 2px solid transparent;
-  transition: 0.2s;
+  transition: 0.18s;
 }
 
 .bot-nav-links a:hover {
@@ -83,10 +84,11 @@ body {
 }
 
 /* BUTTONS */
+
 .bot-btn {
   border-radius: 999px;
   border: none;
-  padding: 0.55rem 1.25rem;
+  padding: 0.55rem 1.3rem;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -116,17 +118,17 @@ body {
 .bot-btn--ghost {
   background: transparent;
   color: #e5e7eb;
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.6);
 }
 
 .bot-btn--ghost:hover {
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .bot-btn--outline {
   background: #ffffff;
   color: var(--bot-text-main);
-  border: 1px solid rgba(148, 163, 184, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.8);
 }
 
 .bot-btn--outline:hover {
@@ -134,12 +136,13 @@ body {
 }
 
 /* HERO */
+
 .bot-hero {
   background: var(--bot-bg-dark);
   color: white;
   padding: 4.5rem 5vw 5rem;
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
   gap: 3.5rem;
 }
 
@@ -160,19 +163,20 @@ body {
 }
 
 .bot-hero-actions {
-  margin-top: 1.5rem;
+  margin-top: 1.6rem;
   display: flex;
-  gap: 0.8rem;
   flex-wrap: wrap;
+  gap: 0.8rem;
 }
 
 .bot-hero-note {
-  margin-top: 0.7rem;
+  margin-top: 0.8rem;
   font-size: 0.8rem;
   opacity: 0.8;
 }
 
 /* HERO PREVIEW */
+
 .bot-hero-preview {
   display: flex;
   justify-content: center;
@@ -184,7 +188,7 @@ body {
   border-radius: 14px;
   padding: 1rem 1.3rem;
   background: #020617;
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.55);
   color: #f1f5f9;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
 }
@@ -200,7 +204,14 @@ body {
   color: #9ca3af;
 }
 
+.bot-preview-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+}
+
 /* WAVE */
+
 .bot-wave-separator {
   background: var(--bot-bg-dark);
 }
@@ -211,141 +222,200 @@ body {
   display: block;
 }
 
-/* ===================================== */
-/*               FEATURES                */
-/* ===================================== */
+/* ============================= */
+/*        ÚJ ALSÓ RÉSZ          */
+/* ============================= */
 
-.bot-features {
-  background: #ffffff;
-  padding: 4rem 5vw 4.5rem;
-}
-
-.bot-section-title {
-  text-align: center;
-  margin-bottom: 3rem;
-  font-size: 1.6rem;
-  position: relative;
-}
-
-.bot-section-title::after {
-  content: "";
-  width: 80px;
-  height: 2px;
-  background: var(--bot-primary);
-  margin: 0.6rem auto 0;
-  display: block;
-}
-
-/* Egy feature sor – két oszlop: bal kártya, jobb blob */
-.bot-feature-row {
-  max-width: 1120px;
-  margin: 0 auto 3rem;
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: 3rem;
-  align-items: center;
-}
-
-/* fordított elrendezés a 2. sorra */
-.bot-feature-row--reverse .bot-feature-text {
-  order: 2;
-}
-.bot-feature-row--reverse .bot-feature-blob {
-  order: 1;
-}
-
-/* Feature kártya */
-.bot-feature-text {
+.bot-main {
   background: #f9fafb;
-  border-radius: 20px;
-  padding: 1.8rem 2rem;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  border: 1px solid rgba(229, 231, 235, 0.9);
+  padding: 3.5rem 5vw 4rem;
+  color: var(--bot-text-main);
 }
 
-.bot-feature-text h3 {
+.bot-main-intro {
+  max-width: 640px;
+  margin: 0 auto 2.4rem;
+  text-align: center;
+}
+
+.bot-main-intro h2 {
   margin: 0 0 0.6rem;
-  font-size: 1.05rem;
 }
 
-.bot-feature-text p {
+.bot-main-intro p {
   margin: 0;
   font-size: 0.95rem;
   color: var(--bot-text-muted);
 }
 
-/* Blob oldal */
-.bot-feature-blob {
-  width: 100%;
-  max-width: 320px;
-  height: 220px;
-  border-radius: 40% 60% 65% 35%;
-  background: rgba(59, 130, 246, 0.35);
-  position: relative;
-  margin: 0 auto;
+/* három feature kártya */
+
+.bot-main-grid {
+  display: grid;
+  gap: 1.6rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 1120px;
+  margin: 0 auto 3.2rem;
 }
 
-.bot-feature-blob--soft {
-  background: rgba(129, 140, 248, 0.35);
-}
-
-/* „Moderation / Community / Stats” label a blobon */
-.bot-blob-label {
-  position: absolute;
-  bottom: 18px;
-  left: 24px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-/* ===================================== */
-/*                 STATS                 */
-/* ===================================== */
-
-.bot-stats {
+.bot-main-card {
   background: #ffffff;
-  padding: 0 5vw 3.5rem;
+  border-radius: 18px;
+  padding: 1.4rem 1.5rem 1.5rem;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(229, 231, 235, 0.95);
+  position: relative;
+  overflow: hidden;
 }
 
-.bot-stats-grid {
+.bot-main-card h3 {
+  margin: 0 0 0.7rem;
+  font-size: 1rem;
+}
+
+.bot-main-card p {
+  margin: 0 0 1.4rem;
+  font-size: 0.92rem;
+  color: var(--bot-text-muted);
+}
+
+.bot-pill {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.bot-pill--blue {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1d4ed8;
+}
+
+.bot-pill--green {
+  background: rgba(16, 185, 129, 0.16);
+  color: #047857;
+}
+
+/* „terminal” blokk */
+
+.bot-console-wrapper {
+  max-width: 900px;
+  margin: 0 auto 3rem;
+  border-radius: 16px;
+  background: #020617;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.55);
+  overflow: hidden;
+}
+
+.bot-console-header {
+  padding: 0.6rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  background: #020617;
+  color: #e5e7eb;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.bot-console-status {
+  color: #22c55e;
+}
+
+.bot-console-body {
+  padding: 1.1rem 1rem 1.2rem;
+  font-family: "SF Mono", Menlo, ui-monospace, monospace;
+  font-size: 0.85rem;
+  color: #e5e7eb;
+  background: radial-gradient(circle at top left, #1e293b 0, #020617 60%);
+}
+
+.bot-console-body pre {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* két oszlop: tulaj vs staff */
+
+.bot-two-cols {
   max-width: 1120px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.6rem;
 }
 
-.bot-stat-card {
-  border: 1px solid rgba(148, 163, 184, 0.45);
-  border-radius: 14px;
-  padding: 1.3rem 1rem;
-  text-align: center;
-  background: #f9fafb;
+.bot-two-col-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.4rem 1.5rem 1.3rem;
+  border: 1px solid rgba(229, 231, 235, 0.9);
 }
 
-.bot-stat-number {
-  font-size: 1.7rem;
-  font-weight: 700;
+.bot-two-col-card h3 {
+  margin: 0 0 0.6rem;
 }
 
-.bot-stat-label {
+.bot-two-col-card ul {
+  margin: 0;
+  padding-left: 1.1rem;
   font-size: 0.9rem;
   color: var(--bot-text-muted);
 }
 
-.bot-stat-card--status {
-  text-align: left;
+/* BACKEND STATUS */
+
+.bot-status {
+  background: #f9fafb;
+  padding: 0 5vw 3.5rem;
 }
 
-/* ===================================== */
-/*                  CTA                  */
-/* ===================================== */
+.bot-status-card {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #020617;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  color: #e5e7eb;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.75);
+  padding: 1.4rem 1.5rem 1.6rem;
+}
+
+.bot-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.bot-status-body {
+  font-size: 0.9rem;
+}
+
+.bot-status-error {
+  color: #f97373;
+}
+
+.bot-status-muted {
+  color: #9ca3af;
+}
+
+.bot-status-json {
+  margin: 0;
+  font-family: "SF Mono", Menlo, ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+/* CTA */
 
 .bot-cta {
   background: #ffffff;
   text-align: center;
   padding: 3rem 5vw 4rem;
+  color: var(--bot-text-main);
 }
 
 .bot-cta h2 {
@@ -357,13 +427,13 @@ body {
 }
 
 .bot-cta p {
-  color: var(--bot-text-muted);
+  margin: 0 0 1.4rem;
   font-size: 0.95rem;
-  max-width: 600px;
-  margin: 0 auto 1.2rem;
+  color: var(--bot-text-muted);
 }
 
 /* FOOTER */
+
 .bot-footer {
   background: var(--bot-bg-dark);
   color: #9ca3af;
@@ -374,9 +444,7 @@ body {
   gap: 1rem;
 }
 
-/* ===================================== */
-/*             RESPONSIVE                */
-/* ===================================== */
+/* RESPONSIVE */
 
 @media (max-width: 900px) {
   .bot-nav-links {
@@ -387,46 +455,35 @@ body {
     padding: 0 1.25rem;
   }
 
-  .bot-hero,
-  .bot-features,
-  .bot-stats,
-  .bot-cta,
-  .bot-footer {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-  }
-
   .bot-hero {
     grid-template-columns: 1fr;
     gap: 2.5rem;
+    padding: 3.5rem 1.25rem 4rem;
   }
 
   .bot-hero-preview {
     order: -1;
   }
 
-  .bot-feature-row {
+  .bot-main,
+  .bot-status,
+  .bot-cta,
+  .bot-footer {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .bot-main-grid {
     grid-template-columns: 1fr;
-    gap: 1.8rem;
   }
 
-  .bot-feature-row--reverse .bot-feature-text,
-  .bot-feature-row--reverse .bot-feature-blob {
-    order: unset;
-  }
-
-  .bot-feature-blob {
-    max-width: 260px;
-    height: 190px;
-  }
-
-  .bot-stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .bot-two-cols {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
-  .bot-stats-grid {
-    grid-template-columns: minmax(0, 1fr);
+  .bot-status-card {
+    padding: 1.2rem 1.1rem 1.3rem;
   }
 }
