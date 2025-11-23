@@ -12,7 +12,6 @@ type DiscordUser = {
   username: string;
   global_name?: string;
   avatar?: string;
-  email?: string;
 };
 
 export default function Home() {
@@ -100,14 +99,15 @@ export default function Home() {
       <div
         style={{
           marginTop: "1rem",
-          padding: "1.5rem",
-          borderRadius: "16px",
+          padding: "1.5rem 1.8rem",
+          borderRadius: "20px",
           background: "#111",
-          maxWidth: "420px",
+          maxWidth: "460px",
           width: "100%",
           display: "flex",
           alignItems: "center",
-          gap: "1rem",
+          gap: "1.3rem",
+          boxShadow: "0 18px 45px rgba(0,0,0,0.55)",
         }}
       >
         {user ? (
@@ -116,18 +116,18 @@ export default function Home() {
               src={avatarUrl}
               alt="Discord avatar"
               style={{
-                width: "72px",
-                height: "72px",
+                width: "80px",
+                height: "80px",
                 borderRadius: "999px",
-                border: "2px solid #2ecc71",
+                border: "3px solid #2ecc71",
                 objectFit: "cover",
               }}
             />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 style={{
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
+                  fontSize: "1.3rem",
+                  fontWeight: 700,
                   marginBottom: "0.2rem",
                 }}
               >
@@ -135,45 +135,39 @@ export default function Home() {
               </div>
               <div
                 style={{
-                  fontSize: "0.9rem",
+                  fontSize: "0.95rem",
                   color: "#aaa",
-                  marginBottom: "0.2rem",
                 }}
               >
                 @{user.username}
-              </div>
-              {user.email && (
-                <div
-                  style={{
-                    fontSize: "0.85rem",
-                    color: "#888",
-                    marginBottom: "0.3rem",
-                  }}
-                >
-                  {user.email}
-                </div>
-              )}
-              <div
-                style={{
-                  fontSize: "0.8rem",
-                  color: "#6bffb0",
-                }}
-              >
-                Discord bejelentkezés aktív ✅
               </div>
             </div>
 
             <button
               onClick={handleLogout}
               style={{
-                padding: "0.4rem 0.8rem",
-                borderRadius: "8px",
+                padding: "0.55rem 1rem",
+                borderRadius: "999px",
                 border: "none",
-                background: "#333",
+                background:
+                  "linear-gradient(135deg, #ff4b5c 0%, #d7263d 50%, #a1162f 100%)",
                 color: "#fff",
-                fontSize: "0.8rem",
+                fontSize: "0.85rem",
+                fontWeight: 600,
                 cursor: "pointer",
                 whiteSpace: "nowrap",
+                boxShadow: "0 8px 18px rgba(215,38,61,0.5)",
+                transition: "transform 0.12s ease, box-shadow 0.12s ease",
+              }}
+              onMouseOver={(e) => {
+                const btn = e.currentTarget;
+                btn.style.transform = "translateY(-1px)";
+                btn.style.boxShadow = "0 10px 24px rgba(215,38,61,0.65)";
+              }}
+              onMouseOut={(e) => {
+                const btn = e.currentTarget;
+                btn.style.transform = "translateY(0)";
+                btn.style.boxShadow = "0 8px 18px rgba(215,38,61,0.5)";
               }}
             >
               Kijelentkezés
@@ -187,7 +181,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* Debug: health JSON (ha kell) */}
+      {/* Debug: health JSON (ha már nem kell, ezt nyugodtan törölheted) */}
       {status === "ok" && health && (
         <pre
           style={{
