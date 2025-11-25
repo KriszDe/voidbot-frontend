@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import { useEffect, useState } from "react";
 
 type HealthResponse = {
@@ -14,29 +13,52 @@ type DiscordUser = {
   avatar?: string;
 };
 
+type DiscordGuild = {
+  id: string;
+  name: string;
+  icon: string | null;
+  owner: boolean;
+  permissions: number;
+};
+
+type BackendStatus = "loading" | "ok" | "error";
+type GuildsStatus = "idle" | "loading" | "ok" | "error" | "noToken";
+
 export default function Home() {
-  const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
+  const API_BASE = import.meta.env.VITE_API_URL as string;
+  const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
+
+  const [backendStatus, setBackendStatus] =
+    useState<BackendStatus>("loading");
   const [health, setHealth] = useState<HealthResponse | null>(null);
+
   const [user, setUser] = useState<DiscordUser | null>(null);
 
-  // Backend health check
+  const [guildsStatus, setGuildsStatus] = useState<GuildsStatus>("idle");
+  const [guilds, setGuilds] = useState<DiscordGuild[]>([]);
+  const [guildError, setGuildError] = useState<string | null>(null);
+
+  const [activeGuildId, setActiveGuildId] = useState<string | null>(() => {
+    return localStorage.getItem("voidbot_active_guild");
+  });
+
+  // --- Backend health ---
   useEffect(() => {
     const run = async () => {
       try {
-        const API_BASE = import.meta.env.VITE_API_URL;
         const res = await fetch(`${API_BASE}/api/health`);
         const json = (await res.json()) as HealthResponse;
         setHealth(json);
-        setStatus("ok");
+        setBackendStatus("ok");
       } catch (e) {
         console.error(e);
-        setStatus("error");
+        setBackendStatus("error");
       }
     };
     run();
-  }, []);
+  }, [API_BASE]);
 
-  // User betöltése localStorage-ből
+  // --- User from localStorage ---
   useEffect(() => {
     try {
       const raw = localStorage.getItem("fivemhub_user");
@@ -48,9 +70,65 @@ export default function Home() {
     }
   }, []);
 
-  const renderBackendText = () => {
-    if (status === "loading") return "Ellenőrzés a backenddel…";
-    if (status === "error") return "Hoppá, valami gond van a backenddel 😕";
+  // --- Guilds betöltése backendről ---
+  useEffect(() => {
+    const token = localStorage.getItem("fivemhub_token");
+    if (!token) {
+      setGuildsStatus("noToken");
+      return;
+    }
+
+    const run = async () => {
+      try {
+        setGuildsStatus("loading");
+        setGuildError(null);
+
+        const res = await fetch(`${API_BASE}/api/discord/guilds`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(
+            `Guilds error: HTTP ${res.status}${
+              text ? ` – ${text.slice(0, 80)}` : ""
+            }`
+          );
+        }
+
+        const data = (await res.json()) as DiscordGuild[];
+
+        // csak olyan szerverek, ahol tulaj vagy manage_guild jog
+        const MANAGE_GUILD = 0x20;
+        const filtered = data.filter(
+          (g) => g.owner || (g.permissions & MANAGE_GUILD) === MANAGE_GUILD
+        );
+
+        setGuilds(filtered);
+        setGuildsStatus("ok");
+      } catch (e: any) {
+        console.error(e);
+        setGuildError(e?.message || "Nem sikerült betölteni a szervereket");
+        setGuildsStatus("error");
+      }
+    };
+
+    run();
+  }, [API_BASE]);
+
+  // --- activeGuildId mentése ---
+  useEffect(() => {
+    if (activeGuildId) {
+      localStorage.setItem("voidbot_active_guild", activeGuildId);
+    } else {
+      localStorage.removeItem("voidbot_active_guild");
+    }
+  }, [activeGuildId]);
+
+  const backendText = () => {
+    if (backendStatus === "loading") return "Ellenőrzés a backenddel…";
+    if (backendStatus === "error")
+      return "Hoppá, valami gond van a backenddel 😕";
     return "Backend tökéletesen működik ✅";
   };
 
@@ -64,142 +142,230 @@ export default function Home() {
   const handleLogout = () => {
     localStorage.removeItem("fivemhub_user");
     localStorage.removeItem("fivemhub_token");
+    localStorage.removeItem("voidbot_active_guild");
     window.location.href = "/";
   };
 
+  const inviteUrlForGuild = (guildId: string) => {
+    // bot + applications.commands scope, fix permissions – később finomhangolhatod
+    const permissions = "268446710";
+    const base = "https://discord.com/oauth2/authorize";
+    const params = new URLSearchParams({
+      client_id: clientId,
+      scope: "bot applications.commands",
+      permissions,
+      guild_id: guildId,
+      disable_guild_select: "true",
+      response_type: "code", // opcionális, de nem árt
+    });
+    return `${base}?${params.toString()}`;
+  };
+
+  const handleInvite = (guild: DiscordGuild) => {
+    const url = inviteUrlForGuild(guild.id);
+    window.open(url, "_blank");
+    // free tier: optimista beállítás – 1 aktív szerver
+    setActiveGuildId(guild.id);
+  };
+
+  const handleManage = (guild: DiscordGuild) => {
+    // később lesz rendes /server/:id oldal
+    window.location.href = `/server/${guild.id}`;
+  };
+
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        background: "#0b0d10",
-        color: "white",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        padding: "2rem",
-        alignItems: "center",
-        gap: "1.5rem",
-      }}
-    >
-      <h1 style={{ fontSize: "2rem" }}>VOIDBOT – Home</h1>
-
-      {/* Backend státusz */}
-      <div
-        style={{
-          padding: "0.7rem 1.3rem",
-          borderRadius: "999px",
-          background: status === "ok" ? "#0f3d1e" : "#3d1010",
-          fontSize: "0.95rem",
-        }}
-      >
-        {renderBackendText()}
-      </div>
-
-      {/* Discord user kártya */}
-      <div
-        style={{
-          marginTop: "1rem",
-          padding: "1.5rem 1.8rem",
-          borderRadius: "20px",
-          background: "#111",
-          maxWidth: "460px",
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          gap: "1.3rem",
-          boxShadow: "0 18px 45px rgba(0,0,0,0.55)",
-        }}
-      >
-        {user ? (
-          <>
-            <img
-              src={avatarUrl}
-              alt="Discord avatar"
-              style={{
-                width: "80px",
-                height: "80px",
-                borderRadius: "999px",
-                border: "3px solid #2ecc71",
-                objectFit: "cover",
-              }}
-            />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div
-                style={{
-                  fontSize: "1.3rem",
-                  fontWeight: 700,
-                  marginBottom: "0.2rem",
-                }}
-              >
-                {displayName}
-              </div>
-              <div
-                style={{
-                  fontSize: "0.95rem",
-                  color: "#aaa",
-                }}
-              >
-                @{user.username}
-              </div>
-            </div>
-
-            <button
-              onClick={handleLogout}
-              style={{
-                padding: "0.55rem 1rem",
-                borderRadius: "999px",
-                border: "none",
-                background:
-                  "linear-gradient(135deg, #ff4b5c 0%, #d7263d 50%, #a1162f 100%)",
-                color: "#fff",
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                boxShadow: "0 8px 18px rgba(215,38,61,0.5)",
-                transition: "transform 0.12s ease, box-shadow 0.12s ease",
-              }}
-              onMouseOver={(e) => {
-                const btn = e.currentTarget;
-                btn.style.transform = "translateY(-1px)";
-                btn.style.boxShadow = "0 10px 24px rgba(215,38,61,0.65)";
-              }}
-              onMouseOut={(e) => {
-                const btn = e.currentTarget;
-                btn.style.transform = "translateY(0)";
-                btn.style.boxShadow = "0 8px 18px rgba(215,38,61,0.5)";
-              }}
-            >
-              Kijelentkezés
-            </button>
-          </>
-        ) : (
-          <div style={{ fontSize: "0.95rem" }}>
-            Nem találtam bejelentkezett felhasználót. 💤 <br />
-            Lépj be újra a főoldalról a Discord gombbal.
+    <main className="home-root">
+      <div className="home-shell">
+        {/* FEJLÉC */}
+        <header className="home-header">
+          <div>
+            <p className="home-kicker">VOIDBOT DASHBOARD</p>
+            <h1>Üdv újra, {displayName}.</h1>
+            <p className="home-sub">
+              Itt tudod ránézni a backend állapotára, és kiválasztani, melyik
+              szerverre legyen „ráakasztva” a VOIDBOT. Free csomagban 1 aktív
+              szervered lehet.
+            </p>
           </div>
+          <div
+            className={`home-backend-pill home-backend-pill--${
+              backendStatus === "ok"
+                ? "ok"
+                : backendStatus === "error"
+                ? "error"
+                : "loading"
+            }`}
+          >
+            {backendText()}
+          </div>
+        </header>
+
+        {/* FELHASZNÁLÓ KÁRTYA */}
+        <section className="home-user-card">
+          {user ? (
+            <>
+              <img src={avatarUrl} alt="Discord avatar" className="home-avatar" />
+              <div className="home-user-text">
+                <div className="home-user-name">{displayName}</div>
+                <div className="home-user-handle">@{user.username}</div>
+                <div className="home-user-meta">
+                  Discord bejelentkezés aktív ✅
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="home-logout-btn"
+              >
+                Kijelentkezés
+              </button>
+            </>
+          ) : (
+            <div className="home-user-missing">
+              Nem találtam bejelentkezett felhasználót. Lépj be a főoldalról a
+              Discord gombbal.
+            </div>
+          )}
+        </section>
+
+        {/* SZERVEREK BLOKK */}
+        <section className="home-servers">
+          <div className="home-servers-header">
+            <div>
+              <h2>Szervereid</h2>
+              <p>
+                Olyan szerverek listája, ahol tulaj vagy, vagy van{" "}
+                <code>Manage Server</code> jogod. Free csomagban 1 szerverhez
+                kapcsolhatod a VOIDBOT-ot.
+              </p>
+            </div>
+          </div>
+
+          {/* állapot üzenetek */}
+          {guildsStatus === "noToken" && (
+            <div className="home-servers-info">
+              Nem találtam érvényes Discord tokent. Lépj be újra a főoldalról.
+            </div>
+          )}
+
+          {guildsStatus === "loading" && (
+            <div className="home-servers-info">Szerverek betöltése…</div>
+          )}
+
+          {guildsStatus === "error" && (
+            <div className="home-servers-info home-servers-info--error">
+              Nem sikerült betölteni a szervereket.
+              <br />
+              <span className="home-servers-info-small">{guildError}</span>
+            </div>
+          )}
+
+          {guildsStatus === "ok" && guilds.length === 0 && (
+            <div className="home-servers-info">
+              Nem találtunk olyan szervert, ahol tulaj vagy vagy manage jogod
+              lenne.
+            </div>
+          )}
+
+          {guildsStatus === "ok" && guilds.length > 0 && (
+            <>
+              {activeGuildId && (
+                <div className="home-free-note">
+                  Free csomag: <strong>1 aktív szerver</strong>. Jelenleg:{" "}
+                  <code>{activeGuildId}</code>
+                </div>
+              )}
+
+              <div className="home-guild-grid">
+                {guilds.map((g) => {
+                  const iconUrl = g.icon
+                    ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=128`
+                    : "https://cdn.discordapp.com/embed/avatars/1.png";
+
+                  const isActive = activeGuildId === g.id;
+                  const hasActiveOther =
+                    !!activeGuildId && activeGuildId !== g.id;
+
+                  return (
+                    <article className="home-guild-card" key={g.id}>
+                      <div className="home-guild-main">
+                        <img
+                          src={iconUrl}
+                          alt={g.name}
+                          className="home-guild-icon"
+                        />
+                        <div className="home-guild-text">
+                          <div className="home-guild-name">{g.name}</div>
+                          <div className="home-guild-meta">
+                            {g.owner ? "Tulajdonos" : "Admin / Manage Server"}
+                          </div>
+                          {isActive ? (
+                            <div className="home-guild-status home-guild-status--ok">
+                              Bot csatlakoztatva
+                            </div>
+                          ) : hasActiveOther ? (
+                            <div className="home-guild-status home-guild-status--limit">
+                              Free csomagban 1 aktív szerver.
+                            </div>
+                          ) : (
+                            <div className="home-guild-status">
+                              Bot még nincs meghívva.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="home-guild-actions">
+                        {isActive ? (
+                          <>
+                            <button
+                              type="button"
+                              className="home-guild-btn home-guild-btn--primary"
+                              onClick={() => handleManage(g)}
+                            >
+                              Kezelés
+                            </button>
+                            <button
+                              type="button"
+                              className="home-guild-btn home-guild-btn--ghost"
+                              onClick={() => setActiveGuildId(null)}
+                            >
+                              Leválasztás
+                            </button>
+                          </>
+                        ) : hasActiveOther ? (
+                          <button
+                            type="button"
+                            disabled
+                            className="home-guild-btn home-guild-btn--disabled"
+                          >
+                            Free: max 1 szerver
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="home-guild-btn home-guild-btn--primary"
+                            onClick={() => handleInvite(g)}
+                          >
+                            Meghívás erre a szerverre
+                          </button>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </section>
+
+        {/* Debug: health JSON – ha nem kell, nyugodtan töröld */}
+        {backendStatus === "ok" && health && (
+          <section className="home-health-debug">
+            <pre>{JSON.stringify(health, null, 2)}</pre>
+          </section>
         )}
       </div>
-
-      {/* Debug: health JSON (ha már nem kell, ezt nyugodtan törölheted) */}
-      {status === "ok" && health && (
-        <pre
-          style={{
-            marginTop: "1rem",
-            padding: "1rem",
-            background: "#111",
-            borderRadius: "8px",
-            maxWidth: "500px",
-            width: "100%",
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
-            fontSize: "0.8rem",
-            opacity: 0.7,
-          }}
-        >
-{JSON.stringify(health, null, 2)}
-        </pre>
-      )}
     </main>
   );
 }
