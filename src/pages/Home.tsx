@@ -347,7 +347,7 @@ export default function Home() {
                             className="home-guild-btn home-guild-btn--primary"
                             onClick={() => handleInvite(g)}
                           >
-                            Meghívás erre a szerverre
+                            Meghívás erre a szerverree
                           </button>
                         )}
                       </div>
