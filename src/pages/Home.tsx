@@ -1,5 +1,5 @@
 // src/pages/Home.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type HealthResponse = {
   ok: boolean;
@@ -25,6 +25,8 @@ type DiscordGuild = {
 type BackendStatus = "loading" | "ok" | "error";
 type GuildsStatus = "idle" | "loading" | "ok" | "error" | "noToken";
 
+type TabKey = "overview" | "servers" | "commands" | "tickets" | "logs";
+
 export default function Home() {
   const API_BASE = import.meta.env.VITE_API_URL as string;
   const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
@@ -44,9 +46,7 @@ export default function Home() {
   );
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<
-    "overview" | "servers" | "commands" | "tickets" | "logs"
-  >("overview");
+  const [activeTab, setActiveTab] = useState<TabKey>("overview");
 
   // ---- backend health ----
   useEffect(() => {
@@ -148,7 +148,7 @@ export default function Home() {
   };
 
   const inviteUrlForGuild = (guildId: string) => {
-    const permissions = "268446710"; // majd finomhangolható
+    const permissions = "268446710";
     const base = "https://discord.com/oauth2/authorize";
     const params = new URLSearchParams({
       client_id: clientId,
@@ -175,190 +175,319 @@ export default function Home() {
     guilds.some((g) => g.id === activeGuildId) &&
     guilds.length > 0;
 
+  const activeGuild = useMemo(
+    () => guilds.find((g) => g.id === activeGuildId) || null,
+    [guilds, activeGuildId]
+  );
+
+  const totalGuilds = guilds.length;
+
   return (
     <main className="dash-root">
-      <div className="dash-shell">
-        {/* FELSŐ SÁV */}
-        <header className="dash-top-row">
-          {/* Bal oldali VOIDBOT blokk */}
-          <div className="dash-brand-card">
-            <div className="dash-brand-pill">VOIDBOT</div>
-            <h1 className="dash-brand-title">Dashboard</h1>
-            <p className="dash-brand-sub">
-              Letisztult, Discord-fókuszú vezérlőpult. Itt látod a szervereid
-              állapotát, logokat és a közelgő frissítéseket.
-            </p>
+      <div className="dash-layout">
+        {/* SIDEBAR */}
+        <aside className="dash-sidebar">
+          <div className="dash-sidebar-header">
+            <div className="dash-logo-dot" />
+            <div className="dash-logo-text">
+              <span className="dash-logo-name">VOIDBOT</span>
+              <span className="dash-logo-sub">Control Panel</span>
+            </div>
           </div>
 
-          {/* Jobb: user + mini menü */}
-          <div className="dash-user-wrapper">
-            <div className="dash-user-card">
-              <div className="dash-user-left">
-                <div className="dash-user-avatar">
-                  <img src={avatarUrl} alt="Avatar" />
-                </div>
-                <div className="dash-user-text">
-                  <div className="dash-user-name">{displayName}</div>
-                  <div className="dash-user-tag">
-                    @{user?.username ?? "unknown"}
-                  </div>
-                  <div className="dash-user-plan">
-                    Tagság: <span>Ingyenes</span>
-                  </div>
-                </div>
-              </div>
-              <div className="dash-user-status">
-                <span
-                  className={`dash-status-dot dash-status-dot--${backendStatus}`}
-                />
-                <span>{backendText()}</span>
-              </div>
-            </div>
+          <nav className="dash-nav">
+            <SidebarItem
+              label="Kezdőlap"
+              icon={<HomeIcon />}
+              active={activeTab === "overview"}
+              onClick={() => setActiveTab("overview")}
+            />
+            <SidebarItem
+              label="Szerverek"
+              icon={<ServerIcon />}
+              active={activeTab === "servers"}
+              onClick={() => setActiveTab("servers")}
+            />
+            <SidebarItem
+              label="Commandok"
+              icon={<SlashIcon />}
+              active={activeTab === "commands"}
+              onClick={() => setActiveTab("commands")}
+            />
+            <SidebarItem
+              label="Ticketek"
+              icon={<TicketIcon />}
+              active={activeTab === "tickets"}
+              onClick={() => setActiveTab("tickets")}
+            />
+            <SidebarItem
+              label="Logok"
+              icon={<LogIcon />}
+              active={activeTab === "logs"}
+              onClick={() => setActiveTab("logs")}
+            />
+          </nav>
 
-            <div className="dash-menu-wrapper">
+          <div className="dash-sidebar-footer">
+            <div className="dash-user-mini">
+              <img src={avatarUrl} alt="Avatar" className="dash-user-mini-img" />
+              <div className="dash-user-mini-text">
+                <span className="dash-user-mini-name">{displayName}</span>
+                <span className="dash-user-mini-tag">
+                  @{user?.username ?? "unknown"}
+                </span>
+              </div>
               <button
                 type="button"
-                className="dash-menu-toggle"
-                onClick={() => setMenuOpen((v) => !v)}
-                aria-label="Felhasználói menü"
+                className="dash-user-mini-logout"
+                onClick={handleLogout}
+                aria-label="Kijelentkezés"
               >
-                <DotsIcon />
+                <LogoutIcon />
               </button>
-
-              {menuOpen && (
-                <div className="dash-menu-dropdown">
-                  <button
-                    type="button"
-                    className="dash-menu-item"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      window.location.href = "/settings";
-                    }}
-                  >
-                    <GearIcon />
-                    Beállítások
-                  </button>
-                  <button
-                    type="button"
-                    className="dash-menu-item"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      window.location.href = "/profile";
-                    }}
-                  >
-                    <UserIcon />
-                    Profil
-                  </button>
-                  <div className="dash-menu-sep" />
-                  <button
-                    type="button"
-                    className="dash-menu-item dash-menu-item--danger"
-                    onClick={handleLogout}
-                  >
-                    <LogoutIcon />
-                    Kijelentkezés
-                  </button>
-                </div>
-              )}
             </div>
           </div>
-        </header>
+        </aside>
 
-        {/* KÉK TAB SÁV */}
-        <nav className="dash-nav-bar">
-          <NavItem
-            label="Kezdőlap"
-            active={activeTab === "overview"}
-            onClick={() => setActiveTab("overview")}
-          />
-          <NavItem
-            label="Szerverek"
-            active={activeTab === "servers"}
-            onClick={() => setActiveTab("servers")}
-          />
-          <NavItem
-            label="Commandok"
-            active={activeTab === "commands"}
-            onClick={() => setActiveTab("commands")}
-          />
-          <NavItem
-            label="Ticketek"
-            active={activeTab === "tickets"}
-            onClick={() => setActiveTab("tickets")}
-          />
-          <NavItem
-            label="Logok"
-            active={activeTab === "logs"}
-            onClick={() => setActiveTab("logs")}
-          />
-        </nav>
+        {/* MAIN AREA */}
+        <div className="dash-main">
+          {/* TOPBAR */}
+          <header className="dash-topbar">
+            <div className="dash-topbar-left">
+              <h1 className="dash-page-title">
+                {activeTab === "overview" && "Áttekintés"}
+                {activeTab === "servers" && "Szerverek"}
+                {activeTab === "commands" && "Commandok"}
+                {activeTab === "tickets" && "Ticketek"}
+                {activeTab === "logs" && "Logok"}
+              </h1>
+              <p className="dash-page-sub">
+                Modern, letisztult vezérlőpult a VOIDBOT-hoz.
+              </p>
+            </div>
 
-        {/* TARTALOM – TABOK SZERINT */}
-        {activeTab === "overview" && (
-          <OverviewSection backendStatus={backendStatus} health={health} />
-        )}
+            <div className="dash-topbar-right">
+              <div
+                className={`dash-status-pill dash-status-pill--${backendStatus}`}
+              >
+                <span className="dash-status-dot" />
+                <span>{backendText()}</span>
+              </div>
 
-        {activeTab === "servers" && (
-          <ServersSection
-            guildsStatus={guildsStatus}
-            guilds={guilds}
-            guildError={guildError}
-            activeGuildId={activeGuildId}
-            hasOtherActive={hasOtherActive}
-            onInvite={handleInvite}
-            onManage={handleManage}
-            onDetach={() => setActiveGuildId(null)}
-          />
-        )}
+              <div className="dash-user-top">
+                <button
+                  type="button"
+                  className="dash-user-top-btn"
+                  onClick={() => setMenuOpen((v) => !v)}
+                >
+                  <img
+                    src={avatarUrl}
+                    alt="Avatar"
+                    className="dash-user-top-avatar"
+                  />
+                  <span className="dash-user-top-name">{displayName}</span>
+                  <ChevronIcon />
+                </button>
 
-        {activeTab === "commands" && (
-          <ComingSoonSection
-            title="Commandok"
-            description="Itt fogod tudni menedzselni a slash parancsokat, modulonként rendezve."
-          />
-        )}
+                {menuOpen && (
+                  <div className="dash-user-dropdown">
+                    <button
+                      type="button"
+                      className="dash-dropdown-item"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        window.location.href = "/profile";
+                      }}
+                    >
+                      <UserIcon />
+                      Profil
+                    </button>
+                    <button
+                      type="button"
+                      className="dash-dropdown-item"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        window.location.href = "/settings";
+                      }}
+                    >
+                      <GearIcon />
+                      Beállítások
+                    </button>
+                    <div className="dash-dropdown-sep" />
+                    <button
+                      type="button"
+                      className="dash-dropdown-item dash-dropdown-item--danger"
+                      onClick={handleLogout}
+                    >
+                      <LogoutIcon />
+                      Kijelentkezés
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </header>
 
-        {activeTab === "tickets" && (
-          <ComingSoonSection
-            title="Ticketek"
-            description="Ticket rendszer statisztikák, megnyitott / lezárt ticketek, átlagos válaszidő – minden egy helyen."
-          />
-        )}
+          {/* CONTENT */}
+          <section className="dash-content">
+            {/* OVERVIEW */}
+            {activeTab === "overview" && (
+              <>
+                <div className="dash-stats-row">
+                  <StatCard
+                    label="Szerverek"
+                    value={totalGuilds}
+                    hint="Ennyi szerveren van jogosultságod."
+                  />
+                  <StatCard
+                    label="Aktív szerver"
+                    value={activeGuild ? activeGuild.name : "Nincs"}
+                    hint={
+                      activeGuild
+                        ? "Jelenleg ezen a szerveren fut a VOIDBOT."
+                        : "Válassz ki egy szervert a Szerverek fülön."
+                    }
+                  />
+                  <StatCard
+                    label="Backend"
+                    value={
+                      backendStatus === "loading"
+                        ? "Ellenőrzés…"
+                        : backendStatus === "ok"
+                        ? "Online"
+                        : "Hiba"
+                    }
+                    hint={health?.message ?? "Rendszer státusz"}
+                    status={backendStatus}
+                  />
+                </div>
 
-        {activeTab === "logs" && (
-          <ComingSoonSection
-            title="Logok"
-            description="Moderációs log, join/leave napló és bot események. Később ide jönnek a részletes szűrők."
-          />
-        )}
+                <div className="dash-grid-2">
+                  <OverviewCard />
+                  <HealthCard backendStatus={backendStatus} health={health} />
+                </div>
+              </>
+            )}
+
+            {/* SERVERS */}
+            {activeTab === "servers" && (
+              <ServersSection
+                guildsStatus={guildsStatus}
+                guilds={guilds}
+                guildError={guildError}
+                activeGuildId={activeGuildId}
+                hasOtherActive={hasOtherActive}
+                onInvite={handleInvite}
+                onManage={handleManage}
+                onDetach={() => setActiveGuildId(null)}
+              />
+            )}
+
+            {/* OTHER TABS – COMING SOON */}
+            {activeTab === "commands" && (
+              <ComingSoonSection
+                title="Commandok"
+                description="Itt fogod tudni modulonként kezelni a slash parancsokat, engedélyeket és preseteket."
+              />
+            )}
+
+            {activeTab === "tickets" && (
+              <ComingSoonSection
+                title="Ticketek"
+                description="Statok, SLA, átlagos válaszidő és agentek teljesítménye – minden jegyrendszer egy helyen."
+              />
+            )}
+
+            {activeTab === "logs" && (
+              <ComingSoonSection
+                title="Logok"
+                description="Moderációs logok, join/leave események, parancshívások – részletes szűrőkkel."
+              />
+            )}
+          </section>
+        </div>
       </div>
     </main>
   );
 }
 
-/* ----------------- Kis komponensek ----------------- */
+/* ---------- Layout / kisegítő komponensek ---------- */
 
-function NavItem({
-  label,
-  active,
-  onClick,
-}: {
+function SidebarItem(props: {
   label: string;
+  icon: React.ReactNode;
   active: boolean;
   onClick: () => void;
 }) {
+  const { label, icon, active, onClick } = props;
   return (
     <button
       type="button"
       className={`dash-nav-item ${active ? "dash-nav-item--active" : ""}`}
       onClick={onClick}
     >
-      {label}
+      <span className="dash-nav-icon">{icon}</span>
+      <span>{label}</span>
     </button>
   );
 }
 
-function OverviewSection({
+function StatCard(props: {
+  label: string;
+  value: string | number;
+  hint?: string;
+  status?: BackendStatus;
+}) {
+  const { label, value, hint, status } = props;
+  return (
+    <article className="dash-stat-card">
+      <div className="dash-stat-label">{label}</div>
+      <div className="dash-stat-value-row">
+        <span className="dash-stat-value">{value}</span>
+        {status && (
+          <span className={`dash-stat-pill dash-stat-pill--${status}`}>
+            {status === "ok"
+              ? "Online"
+              : status === "loading"
+              ? "Ellenőrzés"
+              : "Hiba"}
+          </span>
+        )}
+      </div>
+      {hint && <p className="dash-stat-hint">{hint}</p>}
+    </article>
+  );
+}
+
+function OverviewCard() {
+  return (
+    <article className="dash-panel">
+      <h2 className="dash-panel-title">Üdv a VOIDBOT panelen 👋</h2>
+      <p className="dash-panel-text">
+        Innen menedzseled a botot: szerverek, commandok, ticketek és logok.
+        Kezdd a <strong>Szerverek</strong> füllel, válaszd ki, hova szeretnéd
+        csatlakoztatni, utána jöhetnek a modulok.
+      </p>
+
+      <ul className="dash-changelog">
+        <li>
+          <span className="dash-chip dash-chip--new">Új</span>
+          Új, letisztult dashboard layout, jobb szerverkezelés.
+        </li>
+        <li>
+          <span className="dash-chip dash-chip--new">Új</span>
+          Single-server free csomag: 1 aktív szerver, egyszerű váltás.
+        </li>
+        <li>
+          <span className="dash-chip dash-chip--soon">Hamarosan</span>
+          Automod presetek, rang menük, FiveM integráció modulonként.
+        </li>
+      </ul>
+    </article>
+  );
+}
+
+function HealthCard({
   backendStatus,
   health,
 }: {
@@ -366,48 +495,22 @@ function OverviewSection({
   health: HealthResponse | null;
 }) {
   return (
-    <section className="dash-overview">
-      <div className="dash-overview-main">
-        <h2>Üdv a VOIDBOT panelen 👋</h2>
-        <p>
-          Itt fogod látni a szervereidet, a bot állapotát, hamarosan pedig a
-          parancsok és ticketek statjait is. Az alábbi dobozban mindig a
-          legfrissebb változásokat írjuk ki.
-        </p>
+    <article className="dash-panel">
+      <h2 className="dash-panel-title">Rendszer állapot</h2>
+      <p className="dash-panel-text">
+        {backendStatus === "loading"
+          ? "Backend ellenőrzése folyamatban…"
+          : backendStatus === "error"
+          ? "Backend hiba – nézd meg később, vagy írj supportnak."
+          : "Minden zöld, a backend online."}
+      </p>
 
-        <ul className="dash-changelog">
-          <li>
-            <span className="dash-chip dash-chip--new">Új</span>
-            Alap dashboard felület & Discord belépés összekötve.
-          </li>
-          <li>
-            <span className="dash-chip dash-chip--soon">Hamarosan</span>
-            Szerverenként külön modulok: automod, rang menük, FiveM integráció.
-          </li>
-          <li>
-            <span className="dash-chip dash-chip--soon">Hamarosan</span>
-            Log nézet (moderáció, join/leave, parancsok).
-          </li>
-        </ul>
-      </div>
-
-      <aside className="dash-overview-side">
-        <h3>Rendszer állapot</h3>
-        <p className="dash-overview-status">
-          {backendStatus === "loading"
-            ? "Backend ellenőrzése…"
-            : backendStatus === "error"
-            ? "Backend hiba – nézd meg később."
-            : "Minden zöld: backend online."}
-        </p>
-
-        {backendStatus === "ok" && health && (
-          <pre className="dash-overview-health">
-            {JSON.stringify(health, null, 2)}
-          </pre>
-        )}
-      </aside>
-    </section>
+      {backendStatus === "ok" && health && (
+        <pre className="dash-health-json">
+          {JSON.stringify(health, null, 2)}
+        </pre>
+      )}
+    </article>
   );
 }
 
@@ -433,18 +536,20 @@ function ServersSection(props: {
   } = props;
 
   return (
-    <section className="dash-grid-section">
-      <div className="dash-grid-header">
-        <h2>Szervereid</h2>
-        <p>
-          Olyan szerverek listája, ahol tulaj vagy, vagy van{" "}
-          <code>Manage Server</code> jogod. Free csomagban 1 szerverhez
-          kapcsolhatod a VOIDBOT-ot.
-        </p>
+    <section className="dash-servers">
+      <div className="dash-servers-header">
+        <div>
+          <h2 className="dash-panel-title">Szervereid</h2>
+          <p className="dash-panel-text dash-panel-text--muted">
+            Azok a Discord szerverek, ahol tulaj vagy, vagy rendelkezel{" "}
+            <code>Manage Server</code> joggal. Free csomagban 1 aktív szerver
+            engedélyezett.
+          </p>
+        </div>
       </div>
 
       {guildsStatus === "noToken" && (
-        <div className="dash-info-box">
+        <div className="dash-info-box dash-info-box--warning">
           Nem találtam érvényes Discord tokent. Lépj be újra a főoldalról.
         </div>
       )}
@@ -471,13 +576,13 @@ function ServersSection(props: {
       {guildsStatus === "ok" && guilds.length > 0 && (
         <>
           {activeGuildId && hasOtherActive && (
-            <div className="dash-free-note">
+            <div className="dash-info-box dash-info-box--note">
               Free csomag: jelenleg egy aktív szerveren fut a VOIDBOT. Másik
               szerver aktiválásához előbb válaszd le az aktuálisat.
             </div>
           )}
 
-          <div className="dash-grid">
+          <div className="dash-guild-grid">
             {guilds.map((g) => {
               const iconUrl = g.icon
                 ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=128`
@@ -488,17 +593,19 @@ function ServersSection(props: {
                 !!activeGuildId && activeGuildId !== g.id;
 
               return (
-                <article className="dash-card" key={g.id}>
-                  <div className="dash-card-main">
-                    <div className="dash-card-icon">
-                      <img src={iconUrl} alt={g.name} />
-                    </div>
-                    <div className="dash-card-text">
-                      <h3>{g.name}</h3>
-                      <p>
+                <article className="dash-guild-card" key={g.id}>
+                  <div className="dash-guild-main">
+                    <img
+                      src={iconUrl}
+                      alt={g.name}
+                      className="dash-guild-icon"
+                    />
+                    <div className="dash-guild-text">
+                      <h3 className="dash-guild-name">{g.name}</h3>
+                      <p className="dash-guild-meta">
                         {g.owner ? "Tulajdonos" : "Admin / Manage Server jog"}
                       </p>
-                      <div className="dash-card-status">
+                      <div className="dash-guild-status">
                         {isActive ? (
                           <span className="dash-pill dash-pill--ok">
                             Bot csatlakoztatva
@@ -516,7 +623,7 @@ function ServersSection(props: {
                     </div>
                   </div>
 
-                  <div className="dash-card-actions">
+                  <div className="dash-guild-actions">
                     {isActive ? (
                       <>
                         <button
@@ -555,14 +662,6 @@ function ServersSection(props: {
                 </article>
               );
             })}
-
-            <article className="dash-card dash-card--ghost">
-              <div className="dash-card-ghost-title">+ új modul</div>
-              <p className="dash-card-ghost-text">
-                Később ide jönnek a külön modulok (pl. ticket center, log
-                viewer, FiveM modul).
-              </p>
-            </article>
           </div>
         </>
       )}
@@ -573,42 +672,88 @@ function ServersSection(props: {
 function ComingSoonSection(props: { title: string; description: string }) {
   return (
     <section className="dash-coming">
-      <div className="dash-coming-card">
-        <h2>{props.title}</h2>
-        <p>{props.description}</p>
+      <article className="dash-panel dash-panel--center">
+        <h2 className="dash-panel-title">{props.title}</h2>
+        <p className="dash-panel-text dash-panel-text--muted">
+          {props.description}
+        </p>
         <p className="dash-coming-tag">Fejlesztés alatt ⚙️</p>
-      </div>
+      </article>
     </section>
   );
 }
 
-/* ----- ikonok a menühöz ----- */
+/* ----- ikonok ----- */
 
-function DotsIcon() {
+function HomeIcon() {
   return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <circle cx="5" cy="12" r="1.8" fill="currentColor" />
-      <circle cx="12" cy="12" r="1.8" fill="currentColor" />
-      <circle cx="19" cy="12" r="1.8" fill="currentColor" />
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M5 12.5V21h5v-4h4v4h5v-8.5L12 4z"
+      />
+    </svg>
+  );
+}
+
+function ServerIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M4 5a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v2a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V5zm3 10a3 3 0 0 0-3 3v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1a3 3 0 0 0-3-3H7zm0-2h10a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3H7A3 3 0 0 0 4 9v1a3 3 0 0 0 3 3z"
+      />
+    </svg>
+  );
+}
+
+function SlashIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M10 4h4l-4 16H6zm-2 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm12 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"
+      />
+    </svg>
+  );
+}
+
+function TicketIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M4 6a2 2 0 0 1 2-2h12l2 4-2 4 2 4-2 4H6a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4zm5 1v2h2V7zm0 4v2h2v-2zm0 4v2h2v-2z"
+      />
+    </svg>
+  );
+}
+
+function LogIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M6 4h13v2H6v12h11v2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm4 4h7v2h-7zm0 4h5v2h-5z"
+      />
+    </svg>
+  );
+}
+
+function ChevronIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M7 10l5 5 5-5z"
+      />
     </svg>
   );
 }
 
 function GearIcon() {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
       <path
         fill="currentColor"
         d="M12 8.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5zm0-6.5 2 1 2.3-.3.9 2 1.8 1.3-.5 2.2L21 11l1.5 1.8-.5 2.2-1.8 1.3-.9 2-2.3-.3-2 1-2-1-2.3.3-.9-2-1.8-1.3.5-2.2L3 11l1.5-1.8-.5-2.2L5.8 5.7l.9-2L9 4l2-1z"
@@ -619,13 +764,7 @@ function GearIcon() {
 
 function UserIcon() {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
       <path
         fill="currentColor"
         d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-3 0-8 1.5-8 4.5V21h16v-2.5C20 15.5 15 14 12 14z"
@@ -636,13 +775,7 @@ function UserIcon() {
 
 function LogoutIcon() {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
       <path
         fill="currentColor"
         d="M16 13v-2H9V8l-5 4 5 4v-3h7zm1-10H7a2 2 0 0 0-2 2v4h2V5h10v14H7v-4H5v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"
