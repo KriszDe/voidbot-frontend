@@ -330,24 +330,60 @@
   }
 }
 
-
 /* ===================================== */
 /*           DASHBOARD (Home)            */
+/*    Landing-szerű, tiszta dizájn      */
 /* ===================================== */
 
 .dash-root {
   min-height: 100vh;
-  background: radial-gradient(circle at top, #111827 0%, #020617 55%);
-  color: #f9fafb;
+  background: #f3f4f6; /* ugyanaz a "világos" hangulat, mint a landing alsó része */
+  color: #111827;
 }
+
+/* konténer – felül sötét, alul világos, közte egy hullámos elválasztó */
 
 .dash-shell {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2.5rem 1.5rem 4rem;
+  position: relative;
 }
 
-/* top row */
+/* sötét header háttér + hullámos vágás alul */
+.dash-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 1400px;
+  height: 220px;
+  background: #020617; /* ugyanaz a sötét, mint a landing tetején */
+  z-index: -2;
+}
+
+/* "hullám" – csak egy finom görbe, mint a landingnél */
+.dash-shell::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 1400px;
+  width: 100%;
+  top: 210px;
+  height: 40px;
+  background: radial-gradient(
+    120% 80% at 50% 0%,
+    #020617 0%,
+    #020617 40%,
+    transparent 60%
+  );
+  z-index: -1;
+}
+
+/* FELSŐ SOR – VOIDBOT + userkártya */
 
 .dash-top-row {
   display: flex;
@@ -356,37 +392,27 @@
   margin-bottom: 1.5rem;
 }
 
-/* bal: „VOIDBOT” blokk – landing-hez hasonló */
+/* Bal – VOIDBOT blokk, kicsit olyan, mint a landing hero szövege */
 
 .dash-brand-card {
-  position: relative;
   flex: 1;
   max-width: 460px;
   border-radius: 18px;
   padding: 1.4rem 1.6rem;
-  background: radial-gradient(circle at top left, #1d4ed8 0%, #020617 60%);
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-}
-
-.dash-brand-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  border: 1px solid rgba(96, 165, 250, 0.3);
-  opacity: 0.35;
-  pointer-events: none;
+  background: #020617;
+  color: #f9fafb;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(31, 41, 55, 0.95);
 }
 
 .dash-brand-pill {
   display: inline-block;
   padding: 0.2rem 0.7rem;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.7);
-  color: #bfdbfe;
+  background: #111827;
+  color: #a5b4fc;
   font-size: 0.75rem;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
@@ -400,10 +426,10 @@
   margin: 0;
   font-size: 0.85rem;
   color: #e5e7eb;
-  max-width: 32rem;
+  max-width: 30rem;
 }
 
-/* jobb: user blokk + menü */
+/* Jobb – user + mini menü */
 
 .dash-user-wrapper {
   display: flex;
@@ -412,7 +438,8 @@
 }
 
 .dash-user-card {
-  background: linear-gradient(135deg, #312e81, #1e293b);
+  background: #020617;
+  color: #f9fafb;
   border-radius: 16px;
   padding: 0.9rem 1.2rem;
   min-width: 260px;
@@ -420,8 +447,8 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 0.4rem;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(31, 41, 55, 0.95);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
 }
 
 .dash-user-left {
@@ -435,7 +462,7 @@
   height: 42px;
   border-radius: 999px;
   overflow: hidden;
-  border: 2px solid rgba(191, 219, 254, 0.9);
+  border: 2px solid #4b5563;
   flex-shrink: 0;
 }
 
@@ -456,13 +483,13 @@
 
 .dash-user-tag {
   font-size: 0.8rem;
-  color: #cbd5f5;
+  color: #9ca3af;
 }
 
 .dash-user-plan {
   font-size: 0.78rem;
   margin-top: 0.1rem;
-  color: #a5b4fc;
+  color: #9ca3af;
 }
 
 .dash-user-plan span {
@@ -490,14 +517,14 @@
 }
 
 .dash-status-dot--error {
-  background: #f97373;
+  background: #ef4444;
 }
 
 .dash-status-dot--loading {
   background: #facc15;
 }
 
-/* menü (fekete kocka + dropdown ikonokkal) */
+/* fekete kis négyzet – lenyíló menü */
 
 .dash-menu-wrapper {
   position: relative;
@@ -506,7 +533,7 @@
 .dash-menu-toggle {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #020617;
   border: 1px solid #1f2937;
   color: #e5e7eb;
@@ -557,38 +584,39 @@
   background: #111827;
 }
 
-/* kék tab sáv – mint a rajzod */
+/* KÉK NAV SÁV – a hosszú kék csík a rajzodon */
 
 .dash-nav-bar {
   margin-top: 1.3rem;
   margin-bottom: 1.6rem;
-  background: rgba(15, 23, 42, 0.9);
+  background: #1d4ed8; /* tiszta kék csík */
   border-radius: 999px;
-  padding: 0.22rem;
+  padding: 0.18rem;
   display: flex;
   gap: 0.25rem;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  overflow-x: auto;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.5);
 }
 
 .dash-nav-item {
   border: none;
   background: transparent;
-  color: #cbd5f5;
+  color: #e5e7eb;
   font-size: 0.82rem;
   font-weight: 500;
-  padding: 0.35rem 0.95rem;
+  padding: 0.35rem 1rem;
   border-radius: 999px;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .dash-nav-item--active {
-  background: linear-gradient(135deg, #1d4ed8, #2563eb);
-  color: #f9fafb;
+  background: #f9fafb;
+  color: #1f2937;
 }
 
-/* KEZDŐLAP (overview) */
+/* =========================== */
+/*   KEZDŐLAP / „Hírek” rész   */
+/* =========================== */
 
 .dash-overview {
   display: grid;
@@ -599,11 +627,11 @@
 .dash-overview-main,
 .dash-overview-side,
 .dash-coming-card {
-  background: rgba(15, 23, 42, 0.95);
+  background: #ffffff;
   border-radius: 18px;
   padding: 1.3rem 1.5rem;
-  border: 1px solid rgba(31, 41, 55, 0.9);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
 }
 
 .dash-overview-main h2 {
@@ -613,72 +641,74 @@
 
 .dash-overview-main p {
   margin: 0 0 0.8rem;
-  font-size: 0.85rem;
-  color: #e5e7eb;
+  font-size: 0.9rem;
+  color: #4b5563;
 }
 
 .dash-changelog {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
   display: grid;
   gap: 0.35rem;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
 }
 
 .dash-changelog li {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  color: #e5e7eb;
+  color: #374151;
 }
 
 .dash-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.12rem 0.45rem;
+  padding: 0.12rem 0.55rem;
   border-radius: 999px;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 600;
 }
 
 .dash-chip--new {
-  background: #22c55e1a;
-  color: #4ade80;
+  background: #ecfdf3;
+  color: #16a34a;
 }
 
 .dash-chip--soon {
-  background: #fbbf241a;
-  color: #facc15;
+  background: #fffbeb;
+  color: #d97706;
 }
 
 .dash-overview-side h3 {
   margin: 0 0 0.4rem;
-  font-size: 0.95rem;
+  font-size: 0.98rem;
 }
 
 .dash-overview-status {
   margin: 0 0 0.7rem;
-  font-size: 0.82rem;
-  color: #e5e7eb;
+  font-size: 0.86rem;
+  color: #4b5563;
 }
 
 .dash-overview-health {
   margin: 0;
   padding: 0.6rem 0.8rem;
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   border-radius: 12px;
-  background: #020617;
-  border: 1px solid #1e293b;
+  background: #111827;
+  color: #e5e7eb;
   max-height: 220px;
   overflow: auto;
 }
 
-/* GRID SZEKCIÓ – SZERVER KÁRTYÁK */
+/* =========================== */
+/*       SZERVER KÁRTYÁK       */
+/* =========================== */
 
 .dash-grid-section {
-  margin-top: 0.5rem;
+  margin-top: 0.7rem;
 }
 
 .dash-grid-header h2 {
@@ -688,35 +718,37 @@
 
 .dash-grid-header p {
   margin: 0;
-  font-size: 0.8rem;
-  color: #e5e7eb;
+  font-size: 0.86rem;
+  color: #4b5563;
 }
 
 .dash-info-box {
   margin-top: 1rem;
-  padding: 0.8rem 1rem;
+  padding: 0.9rem 1rem;
   border-radius: 14px;
-  background: #020617;
-  border: 1px solid #1e293b;
-  font-size: 0.8rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  font-size: 0.86rem;
+  color: #1e3a8a;
 }
 
 .dash-info-box--error {
-  border-color: #f97373;
-  color: #fecaca;
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
 }
 
 .dash-info-detail {
   display: block;
-  font-size: 0.75rem;
-  opacity: 0.8;
+  font-size: 0.8rem;
+  opacity: 0.85;
   margin-top: 0.2rem;
 }
 
 .dash-free-note {
   margin-top: 0.8rem;
-  font-size: 0.8rem;
-  color: #e5e7eb;
+  font-size: 0.86rem;
+  color: #374151;
 }
 
 .dash-grid {
@@ -727,11 +759,11 @@
 }
 
 .dash-card {
-  background: #020617;
+  background: #ffffff;
   border-radius: 18px;
   padding: 1rem 1.1rem;
-  border: 1px solid #1f2937;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.8);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
@@ -747,7 +779,7 @@
   height: 48px;
   border-radius: 14px;
   overflow: hidden;
-  border: 2px solid #4b5563;
+  background: #e5e7eb;
   flex-shrink: 0;
 }
 
@@ -759,13 +791,13 @@
 
 .dash-card-text h3 {
   margin: 0 0 0.2rem;
-  font-size: 0.95rem;
+  font-size: 0.96rem;
 }
 
 .dash-card-text p {
   margin: 0 0 0.25rem;
-  font-size: 0.8rem;
-  color: #9ca3af;
+  font-size: 0.84rem;
+  color: #6b7280;
 }
 
 .dash-card-status {
@@ -774,21 +806,21 @@
 
 .dash-pill {
   display: inline-block;
-  padding: 0.1rem 0.55rem;
+  padding: 0.1rem 0.6rem;
   border-radius: 999px;
-  font-size: 0.75rem;
-  color: #e5e7eb;
-  background: #111827;
+  font-size: 0.76rem;
+  color: #374151;
+  background: #f3f4f6;
 }
 
 .dash-pill--ok {
-  background: #065f46;
-  color: #a7f3d0;
+  background: #ecfdf3;
+  color: #16a34a;
 }
 
 .dash-pill--limit {
-  background: #7c2d12;
-  color: #fed7aa;
+  background: #fef2f2;
+  color: #b91c1c;
 }
 
 .dash-card-actions {
@@ -808,9 +840,8 @@
 }
 
 .dash-btn--primary {
-  background: linear-gradient(135deg, #4c1d95, #6366f1);
+  background: #2563eb;
   color: #f9fafb;
-  box-shadow: 0 16px 30px rgba(79, 70, 229, 0.7);
 }
 
 .dash-btn--primary:hover {
@@ -818,27 +849,27 @@
 }
 
 .dash-btn--ghost {
-  background: transparent;
-  color: #e5e7eb;
-  border: 1px solid #4b5563;
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
 }
 
 .dash-btn--ghost:hover {
-  background: #111827;
+  background: #f3f4f6;
 }
 
 .dash-btn--disabled {
-  background: #020617;
+  background: #e5e7eb;
   color: #6b7280;
-  border: 1px solid #374151;
+  border: 1px solid #d1d5db;
   cursor: not-allowed;
 }
 
-/* ghost kártya – + modul */
+/* „+ új modul” ghost kártya */
 
 .dash-card--ghost {
   border-style: dashed;
-  align-items: flex-start;
+  text-align: left;
 }
 
 .dash-card-ghost-title {
@@ -848,18 +879,14 @@
 
 .dash-card-ghost-text {
   margin-top: 0.3rem;
-  font-size: 0.8rem;
-  color: #9ca3af;
+  font-size: 0.84rem;
+  color: #6b7280;
 }
 
-/* „Hamarosan” szekciók (commandok, ticketek, logok) */
+/* „Hamarosan” szekciók */
 
 .dash-coming {
-  margin-top: 0.5rem;
-}
-
-.dash-coming-card {
-  text-align: left;
+  margin-top: 0.7rem;
 }
 
 .dash-coming-card h2 {
@@ -869,16 +896,16 @@
 
 .dash-coming-card p {
   margin: 0 0 0.4rem;
-  font-size: 0.85rem;
-  color: #e5e7eb;
+  font-size: 0.88rem;
+  color: #4b5563;
 }
 
 .dash-coming-tag {
-  font-size: 0.8rem;
-  color: #a5b4fc;
+  font-size: 0.82rem;
+  color: #2563eb;
 }
 
-/* responsive */
+/* RESPONSIVE */
 
 @media (max-width: 900px) {
   .dash-top-row {
@@ -895,11 +922,7 @@
     padding: 2rem 1rem 3rem;
   }
 
-  .dash-user-wrapper {
-    justify-content: space-between;
-  }
-
   .dash-nav-bar {
-    border-radius: 12px;
+    border-radius: 14px;
   }
 }
