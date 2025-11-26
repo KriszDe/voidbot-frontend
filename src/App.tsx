@@ -61,7 +61,7 @@ export default function App() {
             <span className="bot-logo-text">VOIDBOT</span>
           </div>
           <nav className="bot-nav-links">
-            <a href="#overview">Your Bot</a>
+            <a href="#overview">Saját Botod.</a>
             <a href="#features">Features</a>
             <a href="#status">Status</a>
             <a href="#docs">Docs</a>
