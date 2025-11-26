@@ -44,6 +44,9 @@ export default function Home() {
   );
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "servers" | "commands" | "tickets" | "logs"
+  >("overview");
 
   // ---- backend health ----
   useEffect(() => {
@@ -92,7 +95,7 @@ export default function Home() {
         if (!res.ok) {
           const text = await res.text().catch(() => "");
           throw new Error(
-            `HTTP ${res.status}${text ? " – " + text.slice(0, 60) : ""}`
+            `HTTP ${res.status}${text ? " – " + text.slice(0, 80) : ""}`
           );
         }
 
@@ -140,12 +143,12 @@ export default function Home() {
 
   const backendText = () => {
     if (backendStatus === "loading") return "Backend ellenőrzése…";
-    if (backendStatus === "error") return "Backend hiba 😕";
-    return "Backend ok ✅";
+    if (backendStatus === "error") return "Backend hiba";
+    return "Backend rendben";
   };
 
   const inviteUrlForGuild = (guildId: string) => {
-    const permissions = "268446710"; // finomhangolható
+    const permissions = "268446710"; // majd finomhangolható
     const base = "https://discord.com/oauth2/authorize";
     const params = new URLSearchParams({
       client_id: clientId,
@@ -175,15 +178,19 @@ export default function Home() {
   return (
     <main className="dash-root">
       <div className="dash-shell">
-        {/* FELSŐ SÁV: bal oldalt logo blokk, jobb oldalt user blokk */}
-        <div className="dash-top-row">
+        {/* FELSŐ SÁV */}
+        <header className="dash-top-row">
+          {/* Bal oldali VOIDBOT blokk */}
           <div className="dash-brand-card">
-            <span className="dash-brand-pill">VOIDBOT</span>
+            <div className="dash-brand-pill">VOIDBOT</div>
+            <h1 className="dash-brand-title">Dashboard</h1>
             <p className="dash-brand-sub">
-              Retro Discord panel • magyar nyelven
+              Letisztult, Discord-fókuszú vezérlőpult. Itt látod a szervereid
+              állapotát, logokat és a közelgő frissítéseket.
             </p>
           </div>
 
+          {/* Jobb: user + mini menü */}
           <div className="dash-user-wrapper">
             <div className="dash-user-card">
               <div className="dash-user-left">
@@ -196,7 +203,7 @@ export default function Home() {
                     @{user?.username ?? "unknown"}
                   </div>
                   <div className="dash-user-plan">
-                    Tagság: <strong>Ingyenes</strong>
+                    Tagság: <span>Ingyenes</span>
                   </div>
                 </div>
               </div>
@@ -208,13 +215,16 @@ export default function Home() {
               </div>
             </div>
 
-            {/* kis fekete négyzet – menü */}
             <div className="dash-menu-wrapper">
               <button
                 type="button"
                 className="dash-menu-toggle"
                 onClick={() => setMenuOpen((v) => !v)}
-              />
+                aria-label="Felhasználói menü"
+              >
+                <DotsIcon />
+              </button>
+
               {menuOpen && (
                 <div className="dash-menu-dropdown">
                   <button
@@ -225,178 +235,418 @@ export default function Home() {
                       window.location.href = "/settings";
                     }}
                   >
+                    <GearIcon />
                     Beállítások
                   </button>
+                  <button
+                    type="button"
+                    className="dash-menu-item"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      window.location.href = "/profile";
+                    }}
+                  >
+                    <UserIcon />
+                    Profil
+                  </button>
+                  <div className="dash-menu-sep" />
                   <button
                     type="button"
                     className="dash-menu-item dash-menu-item--danger"
                     onClick={handleLogout}
                   >
+                    <LogoutIcon />
                     Kijelentkezés
                   </button>
                 </div>
               )}
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* HOSSZÚ KÉK SÁV – fő navigáció */}
+        {/* KÉK TAB SÁV */}
         <nav className="dash-nav-bar">
-          <button className="dash-nav-item dash-nav-item--active">
-            Kezdőlap
-          </button>
-          <button className="dash-nav-item">Kezelés</button>
-          <button className="dash-nav-item">Commandok</button>
-          <button className="dash-nav-item">Ticketek</button>
-          <button className="dash-nav-item">Logok</button>
+          <NavItem
+            label="Kezdőlap"
+            active={activeTab === "overview"}
+            onClick={() => setActiveTab("overview")}
+          />
+          <NavItem
+            label="Szerverek"
+            active={activeTab === "servers"}
+            onClick={() => setActiveTab("servers")}
+          />
+          <NavItem
+            label="Commandok"
+            active={activeTab === "commands"}
+            onClick={() => setActiveTab("commands")}
+          />
+          <NavItem
+            label="Ticketek"
+            active={activeTab === "tickets"}
+            onClick={() => setActiveTab("tickets")}
+          />
+          <NavItem
+            label="Logok"
+            active={activeTab === "logs"}
+            onClick={() => setActiveTab("logs")}
+          />
         </nav>
 
-        {/* GRID – szerver kártyák */}
-        <section className="dash-grid-section">
-          <div className="dash-grid-header">
-            <h2>Szervereid</h2>
-            <p>
-              Azok a Discord szerverek, ahol tulaj vagy, vagy van{" "}
-              <code>Manage Server</code> jogod. Free csomagban 1 aktív szerver
-              használható.
-            </p>
-          </div>
+        {/* TARTALOM – TABOK SZERINT */}
+        {activeTab === "overview" && (
+          <OverviewSection backendStatus={backendStatus} health={health} />
+        )}
 
-          {/* állapot üzenetek */}
-          {guildsStatus === "noToken" && (
-            <div className="dash-info-box">
-              Nem találtam érvényes Discord tokent. Lépj be újra a főoldalról.
-            </div>
-          )}
+        {activeTab === "servers" && (
+          <ServersSection
+            guildsStatus={guildsStatus}
+            guilds={guilds}
+            guildError={guildError}
+            activeGuildId={activeGuildId}
+            hasOtherActive={hasOtherActive}
+            onInvite={handleInvite}
+            onManage={handleManage}
+            onDetach={() => setActiveGuildId(null)}
+          />
+        )}
 
-          {guildsStatus === "loading" && (
-            <div className="dash-info-box">Szerverek betöltése…</div>
-          )}
+        {activeTab === "commands" && (
+          <ComingSoonSection
+            title="Commandok"
+            description="Itt fogod tudni menedzselni a slash parancsokat, modulonként rendezve."
+          />
+        )}
 
-          {guildsStatus === "error" && (
-            <div className="dash-info-box dash-info-box--error">
-              Nem sikerült betölteni a szervereket.
-              {guildError && (
-                <span className="dash-info-detail">{guildError}</span>
-              )}
-            </div>
-          )}
+        {activeTab === "tickets" && (
+          <ComingSoonSection
+            title="Ticketek"
+            description="Ticket rendszer statisztikák, megnyitott / lezárt ticketek, átlagos válaszidő – minden egy helyen."
+          />
+        )}
 
-          {guildsStatus === "ok" && guilds.length === 0 && (
-            <div className="dash-info-box">
-              Nem találtunk olyan szervert, ahol lenne jogosultságod.
-            </div>
-          )}
-
-          {guildsStatus === "ok" && guilds.length > 0 && (
-            <>
-              {activeGuildId && hasOtherActive && (
-                <div className="dash-free-note">
-                  Free csomag: jelenleg <code>{activeGuildId}</code> az aktív
-                  szerver.
-                </div>
-              )}
-
-              <div className="dash-grid">
-                {guilds.map((g) => {
-                  const iconUrl = g.icon
-                    ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=128`
-                    : "https://cdn.discordapp.com/embed/avatars/1.png";
-
-                  const isActive = activeGuildId === g.id;
-                  const blockedByFree =
-                    !!activeGuildId && activeGuildId !== g.id;
-
-                  return (
-                    <article className="dash-card" key={g.id}>
-                      <div className="dash-card-main">
-                        <div className="dash-card-icon">
-                          <img src={iconUrl} alt={g.name} />
-                        </div>
-                        <div className="dash-card-text">
-                          <h3>{g.name}</h3>
-                          <p>
-                            {g.owner ? "Tulajdonos" : "Admin / Manage Server"}
-                          </p>
-
-                          <div className="dash-card-status">
-                            {isActive ? (
-                              <span className="dash-pill dash-pill--ok">
-                                Bot csatlakoztatva
-                              </span>
-                            ) : blockedByFree ? (
-                              <span className="dash-pill dash-pill--limit">
-                                Free csomag: max 1 szerver
-                              </span>
-                            ) : (
-                              <span className="dash-pill">
-                                Bot még nincs meghívva
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="dash-card-actions">
-                        {isActive ? (
-                          <>
-                            <button
-                              type="button"
-                              className="dash-btn dash-btn--primary"
-                              onClick={() => handleManage(g)}
-                            >
-                              Kezelés
-                            </button>
-                            <button
-                              type="button"
-                              className="dash-btn dash-btn--ghost"
-                              onClick={() => setActiveGuildId(null)}
-                            >
-                              Leválasztás
-                            </button>
-                          </>
-                        ) : blockedByFree ? (
-                          <button
-                            type="button"
-                            disabled
-                            className="dash-btn dash-btn--disabled"
-                          >
-                            Free: csak 1 szerver
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className="dash-btn dash-btn--primary"
-                            onClick={() => handleInvite(g)}
-                          >
-                            Meghívás erre a szerverre
-                          </button>
-                        )}
-                      </div>
-                    </article>
-                  );
-                })}
-
-                {/* plusz kártya – majd ide jöhetnek modulok, extra szerverek */}
-                <article className="dash-card dash-card--ghost">
-                  <div className="dash-card-ghost-title">+ új modul</div>
-                  <p className="dash-card-ghost-text">
-                    Később ide jöhetnek külön modulok (pl. FiveM stats, ticket
-                    center, log viewer).
-                  </p>
-                </article>
-              </div>
-            </>
-          )}
-        </section>
-
-        {/* backend JSON debug – ha zavar, nyugodtan töröld */}
-        {backendStatus === "ok" && health && (
-          <section className="dash-health-debug">
-            <pre>{JSON.stringify(health, null, 2)}</pre>
-          </section>
+        {activeTab === "logs" && (
+          <ComingSoonSection
+            title="Logok"
+            description="Moderációs log, join/leave napló és bot események. Később ide jönnek a részletes szűrők."
+          />
         )}
       </div>
     </main>
+  );
+}
+
+/* ----------------- Kis komponensek ----------------- */
+
+function NavItem({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={`dash-nav-item ${active ? "dash-nav-item--active" : ""}`}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+}
+
+function OverviewSection({
+  backendStatus,
+  health,
+}: {
+  backendStatus: BackendStatus;
+  health: HealthResponse | null;
+}) {
+  return (
+    <section className="dash-overview">
+      <div className="dash-overview-main">
+        <h2>Üdv a VOIDBOT panelen 👋</h2>
+        <p>
+          Itt fogod látni a szervereidet, a bot állapotát, hamarosan pedig a
+          parancsok és ticketek statjait is. Az alábbi dobozban mindig a
+          legfrissebb változásokat írjuk ki.
+        </p>
+
+        <ul className="dash-changelog">
+          <li>
+            <span className="dash-chip dash-chip--new">Új</span>
+            Alap dashboard felület & Discord belépés összekötve.
+          </li>
+          <li>
+            <span className="dash-chip dash-chip--soon">Hamarosan</span>
+            Szerverenként külön modulok: automod, rang menük, FiveM integráció.
+          </li>
+          <li>
+            <span className="dash-chip dash-chip--soon">Hamarosan</span>
+            Log nézet (moderáció, join/leave, parancsok).
+          </li>
+        </ul>
+      </div>
+
+      <aside className="dash-overview-side">
+        <h3>Rendszer állapot</h3>
+        <p className="dash-overview-status">
+          {backendStatus === "loading"
+            ? "Backend ellenőrzése…"
+            : backendStatus === "error"
+            ? "Backend hiba – nézd meg később."
+            : "Minden zöld: backend online."}
+        </p>
+
+        {backendStatus === "ok" && health && (
+          <pre className="dash-overview-health">
+            {JSON.stringify(health, null, 2)}
+          </pre>
+        )}
+      </aside>
+    </section>
+  );
+}
+
+function ServersSection(props: {
+  guildsStatus: GuildsStatus;
+  guilds: DiscordGuild[];
+  guildError: string | null;
+  activeGuildId: string | null;
+  hasOtherActive: boolean;
+  onInvite: (g: DiscordGuild) => void;
+  onManage: (g: DiscordGuild) => void;
+  onDetach: () => void;
+}) {
+  const {
+    guildsStatus,
+    guilds,
+    guildError,
+    activeGuildId,
+    hasOtherActive,
+    onInvite,
+    onManage,
+    onDetach,
+  } = props;
+
+  return (
+    <section className="dash-grid-section">
+      <div className="dash-grid-header">
+        <h2>Szervereid</h2>
+        <p>
+          Olyan szerverek listája, ahol tulaj vagy, vagy van{" "}
+          <code>Manage Server</code> jogod. Free csomagban 1 szerverhez
+          kapcsolhatod a VOIDBOT-ot.
+        </p>
+      </div>
+
+      {guildsStatus === "noToken" && (
+        <div className="dash-info-box">
+          Nem találtam érvényes Discord tokent. Lépj be újra a főoldalról.
+        </div>
+      )}
+
+      {guildsStatus === "loading" && (
+        <div className="dash-info-box">Szerverek betöltése…</div>
+      )}
+
+      {guildsStatus === "error" && (
+        <div className="dash-info-box dash-info-box--error">
+          Nem sikerült betölteni a szervereket.
+          {guildError && (
+            <span className="dash-info-detail">{guildError}</span>
+          )}
+        </div>
+      )}
+
+      {guildsStatus === "ok" && guilds.length === 0 && (
+        <div className="dash-info-box">
+          Nem találtunk olyan szervert, ahol lenne jogosultságod.
+        </div>
+      )}
+
+      {guildsStatus === "ok" && guilds.length > 0 && (
+        <>
+          {activeGuildId && hasOtherActive && (
+            <div className="dash-free-note">
+              Free csomag: jelenleg egy aktív szerveren fut a VOIDBOT. Másik
+              szerver aktiválásához előbb válaszd le az aktuálisat.
+            </div>
+          )}
+
+          <div className="dash-grid">
+            {guilds.map((g) => {
+              const iconUrl = g.icon
+                ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=128`
+                : "https://cdn.discordapp.com/embed/avatars/1.png";
+
+              const isActive = activeGuildId === g.id;
+              const blockedByFree =
+                !!activeGuildId && activeGuildId !== g.id;
+
+              return (
+                <article className="dash-card" key={g.id}>
+                  <div className="dash-card-main">
+                    <div className="dash-card-icon">
+                      <img src={iconUrl} alt={g.name} />
+                    </div>
+                    <div className="dash-card-text">
+                      <h3>{g.name}</h3>
+                      <p>
+                        {g.owner ? "Tulajdonos" : "Admin / Manage Server jog"}
+                      </p>
+                      <div className="dash-card-status">
+                        {isActive ? (
+                          <span className="dash-pill dash-pill--ok">
+                            Bot csatlakoztatva
+                          </span>
+                        ) : blockedByFree ? (
+                          <span className="dash-pill dash-pill--limit">
+                            Free csomag: max 1 aktív szerver
+                          </span>
+                        ) : (
+                          <span className="dash-pill">
+                            Bot még nincs meghívva
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="dash-card-actions">
+                    {isActive ? (
+                      <>
+                        <button
+                          type="button"
+                          className="dash-btn dash-btn--primary"
+                          onClick={() => onManage(g)}
+                        >
+                          Kezelés
+                        </button>
+                        <button
+                          type="button"
+                          className="dash-btn dash-btn--ghost"
+                          onClick={onDetach}
+                        >
+                          Leválasztás
+                        </button>
+                      </>
+                    ) : blockedByFree ? (
+                      <button
+                        type="button"
+                        className="dash-btn dash-btn--disabled"
+                        disabled
+                      >
+                        Free: csak 1 aktív szerver
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="dash-btn dash-btn--primary"
+                        onClick={() => onInvite(g)}
+                      >
+                        Meghívás erre a szerverre
+                      </button>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+
+            <article className="dash-card dash-card--ghost">
+              <div className="dash-card-ghost-title">+ új modul</div>
+              <p className="dash-card-ghost-text">
+                Később ide jönnek a külön modulok (pl. ticket center, log
+                viewer, FiveM modul).
+              </p>
+            </article>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
+function ComingSoonSection(props: { title: string; description: string }) {
+  return (
+    <section className="dash-coming">
+      <div className="dash-coming-card">
+        <h2>{props.title}</h2>
+        <p>{props.description}</p>
+        <p className="dash-coming-tag">Fejlesztés alatt ⚙️</p>
+      </div>
+    </section>
+  );
+}
+
+/* ----- ikonok a menühöz ----- */
+
+function DotsIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <circle cx="5" cy="12" r="1.8" fill="currentColor" />
+      <circle cx="12" cy="12" r="1.8" fill="currentColor" />
+      <circle cx="19" cy="12" r="1.8" fill="currentColor" />
+    </svg>
+  );
+}
+
+function GearIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M12 8.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5zm0-6.5 2 1 2.3-.3.9 2 1.8 1.3-.5 2.2L21 11l1.5 1.8-.5 2.2-1.8 1.3-.9 2-2.3-.3-2 1-2-1-2.3.3-.9-2-1.8-1.3.5-2.2L3 11l1.5-1.8-.5-2.2L5.8 5.7l.9-2L9 4l2-1z"
+      />
+    </svg>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-3 0-8 1.5-8 4.5V21h16v-2.5C20 15.5 15 14 12 14z"
+      />
+    </svg>
+  );
+}
+
+function LogoutIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M16 13v-2H9V8l-5 4 5 4v-3h7zm1-10H7a2 2 0 0 0-2 2v4h2V5h10v14H7v-4H5v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"
+      />
+    </svg>
   );
 }
