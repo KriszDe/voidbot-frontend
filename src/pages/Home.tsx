@@ -24,25 +24,22 @@ type DiscordGuild = {
 
 type BackendStatus = "loading" | "ok" | "error";
 type GuildsStatus = "idle" | "loading" | "ok" | "error" | "noToken";
-type TabKey =
-  | "overview"
-  | "servers"
-  | "manage"
-  | "commands"
-  | "tickets"
-  | "logs";
+type TabKey = "overview" | "servers" | "manage" | "commands" | "tickets" | "logs";
 
 type LinkedGuildMeta = {
   attachedAt: number;
 };
 
-const API_BASE = import.meta.env.VITE_API_URL as string; // health, guilds, stb.
+// Alap backend (health, guilds, stb.)
+const API_BASE = import.meta.env.VITE_API_URL as string;
+
+// Bot API – ha nincs külön env, fallback az API_BASE-re
 const BOT_API_BASE =
-  (import.meta.env.VITE_BOT_API_URL as string | undefined) || API_BASE; // ha nincs beállítva, fallback
+  (import.meta.env.VITE_BOT_API_URL as string | undefined) || API_BASE;
 
 const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
 
-
+export default function Home() {
   const [backendStatus, setBackendStatus] =
     useState<BackendStatus>("loading");
   const [health, setHealth] = useState<HealthResponse | null>(null);
@@ -85,7 +82,7 @@ const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
       }
     };
     run();
-  }, [API_BASE]);
+  }, []);
 
   // ---- user localStorage-ből ----
   useEffect(() => {
@@ -139,7 +136,7 @@ const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
     };
 
     run();
-  }, [API_BASE]);
+  }, []);
 
   // ---- active guild mentése ----
   useEffect(() => {
@@ -198,10 +195,8 @@ const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
   };
 
   const handleInvite = (g: DiscordGuild) => {
-    // Discord meghívó új tabban -> itt maradsz a dashboardon
     window.open(inviteUrlForGuild(g.id), "_blank");
 
-    // Teszt fázis: úgy vesszük, mintha sikeresen meghívtad volna
     setActiveGuildId(g.id);
     setLinkedGuilds((prev) => ({
       ...prev,
@@ -219,8 +214,6 @@ const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
 
   const handleDetach = () => {
     setActiveGuildId(null);
-    // meta-t meghagyhatjuk history-nak; ha törölni akarod, itt kitörölhetjük
-    // setLinkedGuilds({});
   };
 
   const hasOtherActive =
@@ -694,9 +687,9 @@ const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
           </section>
         )}
 
-        {/* COMMANDOK – ÉLES FORM A BACKENDHEZ */}
+        {/* COMMANDOK */}
         {activeTab === "commands" && (
-          <CommandCreator activeGuild={activeGuild} apiBase={API_BASE} />
+          <CommandCreator activeGuild={activeGuild} />
         )}
 
         {activeTab === "tickets" && (
@@ -736,13 +729,7 @@ function TabButton(props: {
   );
 }
 
-function CommandCreator({
-  activeGuild,
-  apiBase,
-}: {
-  activeGuild: DiscordGuild | null;
-  apiBase: string;
-}) {
+function CommandCreator({ activeGuild }: { activeGuild: DiscordGuild | null }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -770,11 +757,10 @@ function CommandCreator({
       setLoading(true);
 
       const res = await fetch(`${BOT_API_BASE}/api/commands`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description }),
-    });
-
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, description }),
+      });
 
       const json = await res.json();
 
@@ -782,7 +768,7 @@ function CommandCreator({
         throw new Error(json.error || "Ismeretlen hiba");
       }
 
-      setMsg(`Command létrehozva: /${json.name}`);
+      setMsg(`Command létrehozva: /${name}`);
       setName("");
       setDescription("");
     } catch (error: any) {
