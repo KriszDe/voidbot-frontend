@@ -24,7 +24,11 @@ type DiscordGuild = {
 
 type BackendStatus = "loading" | "ok" | "error";
 type GuildsStatus = "idle" | "loading" | "ok" | "error" | "noToken";
-type TabKey = "overview" | "servers" | "commands" | "tickets" | "logs";
+type TabKey = "overview" | "servers" | "manage" | "commands" | "tickets" | "logs";
+
+type LinkedGuildMeta = {
+  attachedAt: number;
+};
 
 export default function Home() {
   const API_BASE = import.meta.env.VITE_API_URL as string;
@@ -46,6 +50,17 @@ export default function Home() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
+
+  const [linkedGuilds, setLinkedGuilds] = useState<
+    Record<string, LinkedGuildMeta>
+  >(() => {
+    try {
+      const raw = localStorage.getItem("voidbot_linked_guilds");
+      return raw ? (JSON.parse(raw) as Record<string, LinkedGuildMeta>) : {};
+    } catch {
+      return {};
+    }
+  });
 
   // ---- backend health ----
   useEffect(() => {
@@ -126,6 +141,15 @@ export default function Home() {
     }
   }, [activeGuildId]);
 
+  // ---- linked guild meta mentése ----
+  useEffect(() => {
+    try {
+      localStorage.setItem("voidbot_linked_guilds", JSON.stringify(linkedGuilds));
+    } catch (e) {
+      console.error("Nem sikerült menteni a linkedGuilds-et:", e);
+    }
+  }, [linkedGuilds]);
+
   const avatarUrl = user?.avatar
     ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`
     : "https://cdn.discordapp.com/embed/avatars/0.png";
@@ -137,6 +161,7 @@ export default function Home() {
     localStorage.removeItem("fivemhub_user");
     localStorage.removeItem("fivemhub_token");
     localStorage.removeItem("voidbot_active_guild");
+    localStorage.removeItem("voidbot_linked_guilds");
     window.location.href = "/";
   };
 
@@ -161,12 +186,29 @@ export default function Home() {
   };
 
   const handleInvite = (g: DiscordGuild) => {
+    // Discord meghívó új tabban -> itt maradsz a dashboardon
     window.open(inviteUrlForGuild(g.id), "_blank");
+
+    // Teszt fázis: úgy vesszük, mintha sikeresen meghívtad volna
     setActiveGuildId(g.id);
+    setLinkedGuilds((prev) => ({
+      ...prev,
+      [g.id]: {
+        attachedAt: Date.now(),
+      },
+    }));
+    setActiveTab("manage");
   };
 
   const handleManage = (g: DiscordGuild) => {
-    window.location.href = `/server/${g.id}`;
+    setActiveGuildId(g.id);
+    setActiveTab("manage");
+  };
+
+  const handleDetach = () => {
+    setActiveGuildId(null);
+    // meta-t meghagyhatjuk history-nak; ha törölni akarod, itt kitörölhetjük
+    // setLinkedGuilds({});
   };
 
   const hasOtherActive =
@@ -178,6 +220,10 @@ export default function Home() {
     () => guilds.find((g) => g.id === activeGuildId) || null,
     [guilds, activeGuildId]
   );
+
+  const activeGuildMeta: LinkedGuildMeta | null = activeGuildId
+    ? linkedGuilds[activeGuildId] ?? null
+    : null;
 
   const totalGuilds = guilds.length;
 
@@ -335,6 +381,11 @@ export default function Home() {
             label="Szerverek"
             active={activeTab === "servers"}
             onClick={() => setActiveTab("servers")}
+          />
+          <TabButton
+            label="Kezelés"
+            active={activeTab === "manage"}
+            onClick={() => setActiveTab("manage")}
           />
           <TabButton
             label="Commandok"
@@ -537,7 +588,7 @@ export default function Home() {
                               <button
                                 type="button"
                                 className="home-btn-inline home-btn-inline--ghost"
-                                onClick={() => setActiveGuildId(null)}
+                                onClick={handleDetach}
                               >
                                 Leválasztás
                               </button>
@@ -569,12 +620,90 @@ export default function Home() {
           </section>
         )}
 
-        {/* COMMAND / TICKET / LOG – placeholder */}
+        {/* KEZELÉS – aktív szerver info, meta localStorage-ből */}
+        {activeTab === "manage" && (
+          <section className="home-section">
+            {!activeGuild || !activeGuildId ? (
+              <article className="home-card home-card--center">
+                <h2 className="home-card-title">Nincs aktív szerver</h2>
+                <p className="home-card-text">
+                  Válassz egy szervert a <strong>Szerverek</strong> fülön, és
+                  hívd meg oda a VOIDBOT-ot. Ezután itt fogsz mindent kezelni.
+                </p>
+              </article>
+            ) : (
+              <div className="home-section-row">
+                <article className="home-card">
+                  <h2 className="home-card-title">Aktív szerver</h2>
+                  <p className="home-card-text">
+                    Itt látod az alap információkat az aktuális szerveredről.
+                  </p>
+                  <ul className="home-list">
+                    <li>
+                      <strong>Név:</strong> {activeGuild.name}
+                    </li>
+                    <li>
+                      <strong>Jogosultságod:</strong>{" "}
+                      {activeGuild.owner
+                        ? "Tulajdonos"
+                        : "Admin / Manage Server jog"}
+                    </li>
+                    <li>
+                      <strong>Bot állapot:</strong>{" "}
+                      <span>Csatlakoztatva (teszt)</span>
+                    </li>
+                    {activeGuildMeta && (
+                      <li>
+                        <strong>Hozzáadva (localStorage):</strong>{" "}
+                        {new Date(activeGuildMeta.attachedAt).toLocaleString(
+                          "hu-HU"
+                        )}
+                      </li>
+                    )}
+                  </ul>
+                </article>
+
+                <article className="home-card">
+                  <h2 className="home-card-title">Szerver / bot beállítások</h2>
+                  <p className="home-card-text">
+                    Később ide jön minden modul: automod, rang menük, FiveM
+                    integráció stb. Most csak teszt metaadatot mutatunk.
+                  </p>
+                  <p className="home-card-text">
+                    A kiválasztott szerver ID-je:
+                    <br />
+                    <code>{activeGuild.id}</code>
+                  </p>
+                </article>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* COMMAND / TICKET / LOG – placeholder, de már aktív szerverrel számol */}
         {activeTab === "commands" && (
-          <ComingSoonSection
-            title="Commandok"
-            description="Itt fogod tudni menedzselni a slash parancsokat, preseteket és modulonként a jogosultságokat."
-          />
+          <section className="home-section">
+            <article className="home-card home-card--center">
+              <h2 className="home-card-title">Commandok</h2>
+              {!activeGuild ? (
+                <p className="home-card-text">
+                  Először válassz egy aktív szervert a{" "}
+                  <strong>Szerverek</strong> fülön, hogy ide tudjuk kötni a
+                  command beállításokat.
+                </p>
+              ) : (
+                <p className="home-card-text">
+                  Itt fogod tudni menedzselni a slash parancsokat ennél a
+                  szervernél:
+                  <br />
+                  <strong>{activeGuild.name}</strong>
+                  <br />
+                  (teszt fázis – itt majd modulonként listázzuk a commandokat).
+                </p>
+              )}
+              <p className="home-coming-tag">Fejlesztés alatt ⚙️</p>
+            </article>
+          </section>
         )}
 
         {activeTab === "tickets" && (
