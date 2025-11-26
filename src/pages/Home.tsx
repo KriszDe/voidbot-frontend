@@ -36,9 +36,12 @@ type LinkedGuildMeta = {
   attachedAt: number;
 };
 
-export default function Home() {
-  const API_BASE = import.meta.env.VITE_API_URL as string;
-  const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
+const API_BASE = import.meta.env.VITE_API_URL as string; // health, guilds, stb.
+const BOT_API_BASE =
+  (import.meta.env.VITE_BOT_API_URL as string | undefined) || API_BASE; // ha nincs beállítva, fallback
+
+const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
+
 
   const [backendStatus, setBackendStatus] =
     useState<BackendStatus>("loading");
@@ -766,11 +769,12 @@ function CommandCreator({
     try {
       setLoading(true);
 
-      const res = await fetch(`${apiBase}/api/commands`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description }),
-      });
+      const res = await fetch(`${BOT_API_BASE}/api/commands`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, description }),
+    });
+
 
       const json = await res.json();
 
