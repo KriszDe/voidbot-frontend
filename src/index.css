@@ -2,6 +2,336 @@
 
 
 /* ===================================== */
+/*             HOME DASHBOARD            */
+/* ===================================== */
+
+.home-root {
+  min-height: 100vh;
+  background: radial-gradient(120% 80% at 50% -10%, #1f2937 0%, #020617 55%);
+  color: #f9fafb;
+}
+
+.home-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 4.5rem;
+}
+
+/* HEADER */
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.home-kicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin: 0 0 0.4rem;
+}
+
+.home-header h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.8rem;
+}
+
+.home-sub {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #9ca3af;
+  max-width: 540px;
+}
+
+.home-backend-pill {
+  border-radius: 999px;
+  padding: 0.55rem 1.3rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.home-backend-pill--loading {
+  background: #111827;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  color: #e5e7eb;
+}
+
+.home-backend-pill--ok {
+  background: #022c22;
+  border: 1px solid #22c55e;
+  color: #bbf7d0;
+}
+
+.home-backend-pill--error {
+  background: #450a0a;
+  border: 1px solid #f97373;
+  color: #fecaca;
+}
+
+/* USER CARD */
+
+.home-user-card {
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 20px;
+  padding: 1.5rem 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 1.3rem;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
+  margin-bottom: 2.4rem;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+}
+
+.home-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 999px;
+  border: 3px solid #22c55e;
+  object-fit: cover;
+}
+
+.home-user-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.home-user-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+
+.home-user-handle {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-bottom: 0.3rem;
+}
+
+.home-user-meta {
+  font-size: 0.85rem;
+  color: #22c55e;
+}
+
+.home-logout-btn {
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #ff4b5c 0%, #d7263d 50%, #a1162f 100%);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 8px 18px rgba(215, 38, 61, 0.5);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.home-logout-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(215, 38, 61, 0.65);
+}
+
+.home-user-missing {
+  font-size: 0.9rem;
+}
+
+/* SERVERS */
+
+.home-servers {
+  margin-bottom: 2.8rem;
+}
+
+.home-servers-header h2 {
+  margin: 0 0 0.3rem;
+  font-size: 1.25rem;
+}
+
+.home-servers-header p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.home-servers-info {
+  margin-top: 1.2rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  font-size: 0.9rem;
+}
+
+.home-servers-info--error {
+  border-color: #f97373;
+  color: #fecaca;
+}
+
+.home-servers-info-small {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.home-free-note {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* guild grid */
+
+.home-guild-grid {
+  margin-top: 1.3rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.home-guild-card {
+  background: rgba(15, 23, 42, 0.96);
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  padding: 1rem 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.home-guild-main {
+  display: flex;
+  gap: 0.9rem;
+}
+
+.home-guild-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 2px solid rgba(148, 163, 184, 0.7);
+}
+
+.home-guild-text {
+  min-width: 0;
+}
+
+.home-guild-name {
+  font-size: 0.98rem;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.home-guild-meta {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+}
+
+.home-guild-status {
+  font-size: 0.78rem;
+  color: #cbd5f5;
+}
+
+.home-guild-status--ok {
+  color: #bbf7d0;
+}
+
+.home-guild-status--limit {
+  color: #fbbf24;
+}
+
+.home-guild-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+.home-guild-btn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.home-guild-btn--primary {
+  background: #2563eb;
+  color: white;
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.5);
+}
+
+.home-guild-btn--primary:hover {
+  background: #3b82f6;
+}
+
+.home-guild-btn--ghost {
+  background: transparent;
+  color: #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+}
+
+.home-guild-btn--ghost:hover {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.home-guild-btn--disabled {
+  background: #111827;
+  color: #6b7280;
+  border: 1px solid rgba(75, 85, 99, 0.9);
+  cursor: not-allowed;
+}
+
+/* health debug */
+
+.home-health-debug {
+  margin-top: 2rem;
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+.home-health-debug pre {
+  margin: 0;
+  padding: 0.8rem 0.9rem;
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+  .home-shell {
+    padding: 2.8rem 1rem 3.5rem;
+  }
+
+  .home-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .home-user-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home-guild-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home-guild-actions {
+    align-items: flex-start;
+  }
+}
+
+
+/* ===================================== */
 /*           DASHBOARD (Home)            */
 /* ===================================== */
 
@@ -442,3 +772,4 @@
     width: 100%;
   }
 }
+
