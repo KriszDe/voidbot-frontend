@@ -494,16 +494,17 @@ body {
 
 .home-root {
   min-height: 100vh;
-  background: #020617; /* teljes oldal sötét */
+  background: #050816; /* picit világosabb, kékes dark */
   color: #e5e7eb;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Segoe UI", sans-serif;
+  overflow-x: hidden; /* ne legyen oldalirányú húzó */
 }
 
 /* HERO */
 
 .home-hero {
-  background: radial-gradient(120% 80% at 50% -10%, #111827 0%, #020617 55%);
+  background: radial-gradient(120% 80% at 50% -10%, #141b2f 0%, #050816 55%);
   color: #f9fafb;
 }
 
@@ -558,7 +559,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: #020617;
+  background: #050816;
   border: 1px solid rgba(148, 163, 184, 0.6);
 }
 
@@ -602,7 +603,7 @@ body {
 .home-user-btn {
   border-radius: 999px;
   border: 1px solid #1f2937;
-  background: #020617;
+  background: #050816;
   padding: 0.2rem 0.55rem 0.2rem 0.2rem;
   display: flex;
   align-items: center;
@@ -633,7 +634,7 @@ body {
   min-width: 180px;
   border-radius: 12px;
   padding: 0.25rem;
-  background: #020617;
+  background: #050816;
   border: 1px solid #1f2937;
   box-shadow: 0 22px 55px rgba(0, 0, 0, 0.9);
   z-index: 30;
@@ -741,13 +742,13 @@ body {
 }
 
 .home-btn-secondary:hover {
-  background: #020617;
+  background: #050816;
 }
 
 /* hero jobb, kis státusz kártya */
 
 .home-hero-card {
-  background: #020617;
+  background: #050816;
   border-radius: 20px;
   border: 1px solid rgba(31, 41, 55, 0.9);
   box-shadow: 0 22px 55px rgba(0, 0, 0, 0.85);
@@ -807,7 +808,7 @@ body {
   color: #fde68a;
 }
 
-/* ALSÓ RÉSZ – sötétkék háttér */
+/* ALSÓ RÉSZ */
 
 .home-main-shell {
   max-width: 1120px;
@@ -816,15 +817,14 @@ body {
   margin-top: -2.2rem;
 }
 
-/* NAVBAR – teljes szélesség */
+/* NAVBAR – teljes szélesség, de scrollbar nélkül */
 
 .home-tabs {
   margin-bottom: 1.5rem;
-  background: #020617;
-  border-bottom: 1px solid #1f2937;
+  background: #050816;
+  border-bottom: 1px solid #101827;
   padding: 0.25rem 0.5rem;
 
-  /* teljes viewport szélességre kifut */
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
@@ -832,7 +832,7 @@ body {
   display: flex;
   justify-content: center;
   gap: 0.25rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
 }
 
 .home-tab {
@@ -852,7 +852,7 @@ body {
   color: #0f172a;
 }
 
-/* kártyák / szekciók – sötétkék */
+/* kártyák / szekciók – világosabb, kékes dark */
 
 .home-section-row {
   display: grid;
@@ -868,11 +868,11 @@ body {
 .home-card,
 .home-server-card,
 .home-feature-card {
-  background: #020617;
+  background: #070b1f; /* itt lett picit világosabb */
   border-radius: 18px;
-  border: 1px solid #1f2937;
+  border: 1px solid #151a30;
   padding: 1.3rem 1.4rem;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
 }
 
 .home-card--center {
@@ -915,7 +915,7 @@ body {
   margin: 0;
   padding: 0.7rem 0.9rem;
   border-radius: 12px;
-  background: #020617;
+  background: #050816;
   color: #e5e7eb;
   font-size: 0.76rem;
   border: 1px solid #1f2937;
@@ -951,13 +951,13 @@ body {
   border-radius: 4px;
 }
 
-/* infó boxok – sötét variáció */
+/* infó boxok */
 
 .home-info {
   padding: 0.9rem 1rem;
   border-radius: 12px;
-  background: #020617;
-  border: 1px solid #1d4ed8;
+  background: #050b1f;
+  border: 1px solid #2563eb;
   font-size: 0.86rem;
   color: #bfdbfe;
   margin-bottom: 1rem;
@@ -976,7 +976,7 @@ body {
 }
 
 .home-info--note {
-  background: #0b1120;
+  background: #020617;
   border-color: #38bdf8;
   color: #e0f2fe;
 }
@@ -1031,7 +1031,7 @@ body {
   display: inline-block;
   padding: 0.13rem 0.7rem;
   border-radius: 999px;
-  background: #020617;
+  background: #050816;
   font-size: 0.76rem;
   color: #e5e7eb;
   border: 1px solid #374151;
@@ -1082,7 +1082,7 @@ body {
 }
 
 .home-btn-inline--ghost:hover {
-  background: #020617;
+  background: #050816;
 }
 
 .home-btn-inline--disabled {
@@ -1117,7 +1117,7 @@ body {
   padding: 0.14rem 0.7rem;
   border-radius: 999px;
   font-size: 0.75rem;
-  background: #0b1120;
+  background: #020617;
   color: #60a5fa;
 }
 
