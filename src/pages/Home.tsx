@@ -1,5 +1,5 @@
 // src/pages/Home.tsx
-import { useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type HealthResponse = {
   ok: boolean;
@@ -24,7 +24,13 @@ type DiscordGuild = {
 
 type BackendStatus = "loading" | "ok" | "error";
 type GuildsStatus = "idle" | "loading" | "ok" | "error" | "noToken";
-type TabKey = "overview" | "servers" | "manage" | "commands" | "tickets" | "logs";
+type TabKey =
+  | "overview"
+  | "servers"
+  | "manage"
+  | "commands"
+  | "tickets"
+  | "logs";
 
 type LinkedGuildMeta = {
   attachedAt: number;
@@ -144,7 +150,10 @@ export default function Home() {
   // ---- linked guild meta mentése ----
   useEffect(() => {
     try {
-      localStorage.setItem("voidbot_linked_guilds", JSON.stringify(linkedGuilds));
+      localStorage.setItem(
+        "voidbot_linked_guilds",
+        JSON.stringify(linkedGuilds)
+      );
     } catch (e) {
       console.error("Nem sikerült menteni a linkedGuilds-et:", e);
     }
@@ -360,7 +369,9 @@ export default function Home() {
                 </li>
                 <li>
                   <span>Aktív szerver</span>
-                  <span>{activeGuild ? activeGuild.name : "Nincs kiválasztva"}</span>
+                  <span>
+                    {activeGuild ? activeGuild.name : "Nincs kiválasztva"}
+                  </span>
                 </li>
               </ul>
             </aside>
@@ -680,30 +691,9 @@ export default function Home() {
           </section>
         )}
 
-        {/* COMMAND / TICKET / LOG – placeholder, de már aktív szerverrel számol */}
+        {/* COMMANDOK – ÉLES FORM A BACKENDHEZ */}
         {activeTab === "commands" && (
-          <section className="home-section">
-            <article className="home-card home-card--center">
-              <h2 className="home-card-title">Commandok</h2>
-              {!activeGuild ? (
-                <p className="home-card-text">
-                  Először válassz egy aktív szervert a{" "}
-                  <strong>Szerverek</strong> fülön, hogy ide tudjuk kötni a
-                  command beállításokat.
-                </p>
-              ) : (
-                <p className="home-card-text">
-                  Itt fogod tudni menedzselni a slash parancsokat ennél a
-                  szervernél:
-                  <br />
-                  <strong>{activeGuild.name}</strong>
-                  <br />
-                  (teszt fázis – itt majd modulonként listázzuk a commandokat).
-                </p>
-              )}
-              <p className="home-coming-tag">Fejlesztés alatt ⚙️</p>
-            </article>
-          </section>
+          <CommandCreator activeGuild={activeGuild} apiBase={API_BASE} />
         )}
 
         {activeTab === "tickets" && (
@@ -740,6 +730,125 @@ function TabButton(props: {
     >
       {label}
     </button>
+  );
+}
+
+function CommandCreator({
+  activeGuild,
+  apiBase,
+}: {
+  activeGuild: DiscordGuild | null;
+  apiBase: string;
+}) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setMsg(null);
+    setErr(null);
+
+    if (!activeGuild) {
+      setErr(
+        "Először válassz egy aktív szervert a Szerverek fülön (ahol a bot is bent van)."
+      );
+      return;
+    }
+
+    if (!name || !description) {
+      setErr("Név és leírás kötelező.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(`${apiBase}/api/commands`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, description }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error || "Ismeretlen hiba");
+      }
+
+      setMsg(`Command létrehozva: /${json.name}`);
+      setName("");
+      setDescription("");
+    } catch (error: any) {
+      console.error(error);
+      setErr(error?.message || "Nem sikerült létrehozni a commandot.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <section className="home-section">
+      <article className="home-card">
+        <h2 className="home-card-title">Commandok</h2>
+        {!activeGuild ? (
+          <p className="home-card-text">
+            Először válassz egy aktív szervert a <strong>Szerverek</strong>{" "}
+            fülön, és hívd meg oda a botot. Ezután itt tudsz slash commandokat
+            létrehozni.
+          </p>
+        ) : (
+          <p className="home-card-text">
+            Új slash command létrehozása ehhez a szerverhez:{" "}
+            <strong>{activeGuild.name}</strong>.
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit} className="home-command-form">
+          <div className="home-command-row">
+            <div className="home-command-field">
+              <label>Command név</label>
+              <input
+                type="text"
+                placeholder="pl. ping"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={loading}
+              />
+              <small>Csak kisbetű, szám, -, _ ; max 32 karakter.</small>
+            </div>
+            <div className="home-command-field">
+              <label>Leírás</label>
+              <input
+                type="text"
+                placeholder="pl. Visszadob egy pongot."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="home-btn-inline home-btn-inline--primary"
+            disabled={loading || !activeGuild}
+          >
+            {loading ? "Létrehozás..." : "Command létrehozása"}
+          </button>
+        </form>
+
+        {err && <div className="home-info home-info--error">{err}</div>}
+        {msg && <div className="home-info home-info--note">{msg}</div>}
+
+        <p className="home-coming-tag">
+          Teszt fázis: ha sikeres, a command azonnal használható lesz a Discord
+          szerveren.
+        </p>
+      </article>
+    </section>
   );
 }
 
