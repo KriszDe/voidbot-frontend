@@ -488,3 +488,621 @@ body {
   }
 }
 
+/* ===================================== */
+/*          VOIDBOT HOME DASHBOARD       */
+/*   Hero sötét, alul világos, mint a    */
+/*   screenshoton                        */
+/* ===================================== */
+
+.home-root {
+  min-height: 100vh;
+  background: #f3f4f6;
+  color: #0f172a;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
+}
+
+/* HERO */
+
+.home-hero {
+  background: radial-gradient(120% 80% at 50% -10%, #111827 0%, #020617 55%);
+  color: #f9fafb;
+}
+
+.home-hero-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2.6rem 1.5rem 4.4rem;
+}
+
+/* hero topbar */
+
+.home-hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 2.4rem;
+}
+
+.home-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.home-logo-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #22c55e;
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.9);
+}
+
+.home-logo-text {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+}
+
+.home-top-right {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+/* backend pill */
+
+.home-backend-pill {
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #020617;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+}
+
+.home-backend-pill--ok {
+  border-color: #22c55e;
+}
+
+.home-backend-pill--error {
+  border-color: #f97373;
+}
+
+.home-backend-pill--loading {
+  border-color: #eab308;
+}
+
+.home-backend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #6b7280;
+}
+
+.home-backend-pill--ok .home-backend-dot {
+  background: #22c55e;
+}
+
+.home-backend-pill--error .home-backend-dot {
+  background: #ef4444;
+}
+
+.home-backend-pill--loading .home-backend-dot {
+  background: #eab308;
+}
+
+/* user dropdown */
+
+.home-user-menu {
+  position: relative;
+}
+
+.home-user-btn {
+  border-radius: 999px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  padding: 0.2rem 0.55rem 0.2rem 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #e5e7eb;
+}
+
+.home-user-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.home-user-name {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-user-dropdown {
+  position: absolute;
+  right: 0;
+  top: 2.4rem;
+  min-width: 180px;
+  border-radius: 12px;
+  padding: 0.25rem;
+  background: #020617;
+  border: 1px solid #1f2937;
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.9);
+  z-index: 30;
+}
+
+.home-dropdown-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #e5e7eb;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+}
+
+.home-dropdown-item:hover {
+  background: #111827;
+}
+
+.home-dropdown-item--danger {
+  color: #fecaca;
+}
+
+.home-dropdown-sep {
+  height: 1px;
+  margin: 0.25rem 0;
+  background: #111827;
+}
+
+/* hero main */
+
+.home-hero-main {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.3fr);
+  gap: 2.3rem;
+  align-items: center;
+}
+
+.home-hero-left {
+  max-width: 560px;
+}
+
+.home-kicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin: 0 0 0.4rem;
+}
+
+.home-title {
+  margin: 0 0 0.6rem;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.home-title span {
+  color: #22c55e;
+}
+
+.home-sub {
+  margin: 0 0 1.2rem;
+  font-size: 0.92rem;
+  color: #9ca3af;
+  max-width: 32rem;
+}
+
+.home-hero-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.home-btn {
+  border-radius: 999px;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.home-btn-primary {
+  background: #2563eb;
+  color: #f9fafb;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.65);
+}
+
+.home-btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.home-btn-secondary {
+  background: transparent;
+  color: #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+}
+
+.home-btn-secondary:hover {
+  background: #020617;
+}
+
+/* hero jobb, kis státusz kártya */
+
+.home-hero-card {
+  background: #020617;
+  border-radius: 20px;
+  border: 1px solid rgba(31, 41, 55, 0.9);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.85);
+  padding: 1.1rem 1.2rem;
+  font-size: 0.86rem;
+}
+
+.home-hero-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.6rem;
+}
+
+.home-hero-card-title {
+  font-weight: 600;
+}
+
+.home-hero-card-id {
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+.home-hero-card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.home-hero-card-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-status-pill {
+  padding: 0.12rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+}
+
+.home-status-pill--ok {
+  border-color: #22c55e;
+  color: #4ade80;
+}
+
+.home-status-pill--error {
+  border-color: #f97373;
+  color: #fecaca;
+}
+
+.home-status-pill--loading {
+  border-color: #eab308;
+  color: #fde68a;
+}
+
+/* ALSÓ RÉSZ */
+
+.home-main-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+  margin-top: -2.2rem;
+}
+
+/* kártyák / szekciók */
+
+.home-section-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.home-section {
+  margin-bottom: 2.3rem;
+}
+
+.home-card,
+.home-server-card,
+.home-feature-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  padding: 1.3rem 1.4rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+}
+
+.home-card-title {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+}
+
+.home-card-text {
+  margin: 0 0 0.6rem;
+  font-size: 0.88rem;
+  color: #4b5563;
+}
+
+.home-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+  color: #4b5563;
+}
+
+.home-list li + li {
+  margin-top: 0.25rem;
+}
+
+/* health json */
+
+.home-health-json {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: #0f172a;
+  color: #e5e7eb;
+  font-size: 0.76rem;
+  border: 1px solid #1f2937;
+  max-height: 220px;
+  overflow: auto;
+}
+
+/* section header */
+
+.home-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.home-section-title {
+  margin: 0 0 0.2rem;
+  font-size: 1.15rem;
+}
+
+.home-section-sub {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #4b5563;
+}
+
+.home-section-sub code {
+  font-size: 0.8rem;
+  background: #e5e7eb;
+  padding: 0.05rem 0.25rem;
+  border-radius: 4px;
+}
+
+/* infó boxok */
+
+.home-info {
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: #e5f0ff;
+  border: 1px solid #bfdbfe;
+  font-size: 0.86rem;
+  color: #1e3a8a;
+  margin-bottom: 1rem;
+}
+
+.home-info--warning {
+  background: #fffbeb;
+  border-color: #facc15;
+  color: #854d0e;
+}
+
+.home-info--error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.home-info--note {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e3a8a;
+}
+
+.home-info-detail {
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+/* szerver grid */
+
+.home-server-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.home-server-main {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.home-server-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+}
+
+.home-server-text {
+  min-width: 0;
+}
+
+.home-server-name {
+  margin: 0 0 0.15rem;
+  font-size: 0.98rem;
+}
+
+.home-server-meta {
+  margin: 0 0 0.25rem;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+.home-server-status {
+  font-size: 0.8rem;
+}
+
+.home-pill {
+  display: inline-block;
+  padding: 0.13rem 0.7rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  font-size: 0.76rem;
+  color: #374151;
+}
+
+.home-pill--ok {
+  background: #ecfdf3;
+  color: #16a34a;
+}
+
+.home-pill--limit {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* szerver action gombok */
+
+.home-server-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+}
+
+.home-btn-inline {
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.4rem 0.95rem;
+  border: none;
+  cursor: pointer;
+}
+
+.home-btn-inline--primary {
+  background: #2563eb;
+  color: white;
+}
+
+.home-btn-inline--primary:hover {
+  background: #1d4ed8;
+}
+
+.home-btn-inline--ghost {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.home-btn-inline--ghost:hover {
+  background: #f3f4f6;
+}
+
+.home-btn-inline--disabled {
+  background: #e5e7eb;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  cursor: not-allowed;
+}
+
+/* feature kártyák – Mit tud a VOIDBOT? */
+
+.home-feature-grid {
+  margin-top: 1.3rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.home-feature-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.98rem;
+}
+
+.home-feature-card p {
+  margin: 0 0 0.6rem;
+  font-size: 0.86rem;
+  color: #4b5563;
+}
+
+.home-tag {
+  display: inline-block;
+  padding: 0.14rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.home-tag--accent {
+  background: #ecfdf3;
+  color: #16a34a;
+}
+
+/* responsive */
+
+@media (max-width: 900px) {
+  .home-hero-main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.6rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-hero-shell {
+    padding: 2rem 1rem 3.4rem;
+  }
+
+  .home-main-shell {
+    padding: 0 1rem 2.4rem;
+  }
+
+  .home-section-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-hero-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
