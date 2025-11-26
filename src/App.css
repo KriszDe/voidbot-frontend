@@ -1131,7 +1131,7 @@ body {
 @media (max-width: 900px) {
   .home-hero-main {
     grid-template-columns: minmax(0, 1fr);
-    gap: 1.6rem;
+    gap: 1.7em;
   }
 }
 
