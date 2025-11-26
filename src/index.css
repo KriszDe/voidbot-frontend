@@ -1,386 +1,49 @@
 @import "tailwindcss";
 
 
-/* ===================================== */
-/*             HOME DASHBOARD            */
-/* ===================================== */
-
-.home-root {
-  min-height: 100vh;
-  background: radial-gradient(120% 80% at 50% -10%, #1f2937 0%, #020617 55%);
-  color: #f9fafb;
-}
-
-.home-shell {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 3.5rem 1.5rem 4.5rem;
-}
-
-/* HEADER */
-
-.home-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-.home-kicker {
-  font-size: 0.75rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #9ca3af;
-  margin: 0 0 0.4rem;
-}
-
-.home-header h1 {
-  margin: 0 0 0.4rem;
-  font-size: 1.8rem;
-}
-
-.home-sub {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #9ca3af;
-  max-width: 540px;
-}
-
-.home-backend-pill {
-  border-radius: 999px;
-  padding: 0.55rem 1.3rem;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
-.home-backend-pill--loading {
-  background: #111827;
-  border: 1px solid rgba(148, 163, 184, 0.6);
-  color: #e5e7eb;
-}
-
-.home-backend-pill--ok {
-  background: #022c22;
-  border: 1px solid #22c55e;
-  color: #bbf7d0;
-}
-
-.home-backend-pill--error {
-  background: #450a0a;
-  border: 1px solid #f97373;
-  color: #fecaca;
-}
-
-/* USER CARD */
-
-.home-user-card {
-  background: rgba(15, 23, 42, 0.95);
-  border-radius: 20px;
-  padding: 1.5rem 1.8rem;
-  display: flex;
-  align-items: center;
-  gap: 1.3rem;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
-  margin-bottom: 2.4rem;
-  border: 1px solid rgba(148, 163, 184, 0.6);
-}
-
-.home-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 999px;
-  border: 3px solid #22c55e;
-  object-fit: cover;
-}
-
-.home-user-text {
-  flex: 1;
-  min-width: 0;
-}
-
-.home-user-name {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 0.15rem;
-}
-
-.home-user-handle {
-  font-size: 0.9rem;
-  color: #9ca3af;
-  margin-bottom: 0.3rem;
-}
-
-.home-user-meta {
-  font-size: 0.85rem;
-  color: #22c55e;
-}
-
-.home-logout-btn {
-  padding: 0.55rem 1.1rem;
-  border-radius: 999px;
-  border: none;
-  background: linear-gradient(135deg, #ff4b5c 0%, #d7263d 50%, #a1162f 100%);
-  color: #fff;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0 8px 18px rgba(215, 38, 61, 0.5);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-}
-
-.home-logout-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(215, 38, 61, 0.65);
-}
-
-.home-user-missing {
-  font-size: 0.9rem;
-}
-
-/* SERVERS */
-
-.home-servers {
-  margin-bottom: 2.8rem;
-}
-
-.home-servers-header h2 {
-  margin: 0 0 0.3rem;
-  font-size: 1.25rem;
-}
-
-.home-servers-header p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #9ca3af;
-}
-
-.home-servers-info {
-  margin-top: 1.2rem;
-  padding: 0.9rem 1rem;
-  border-radius: 12px;
-  background: rgba(15, 23, 42, 0.95);
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  font-size: 0.9rem;
-}
-
-.home-servers-info--error {
-  border-color: #f97373;
-  color: #fecaca;
-}
-
-.home-servers-info-small {
-  font-size: 0.75rem;
-  opacity: 0.8;
-}
-
-.home-free-note {
-  margin-top: 1rem;
-  font-size: 0.8rem;
-  color: #9ca3af;
-}
-
-/* guild grid */
-
-.home-guild-grid {
-  margin-top: 1.3rem;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
-}
-
-.home-guild-card {
-  background: rgba(15, 23, 42, 0.96);
-  border-radius: 16px;
-  border: 1px solid rgba(148, 163, 184, 0.6);
-  padding: 1rem 1.2rem;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.home-guild-main {
-  display: flex;
-  gap: 0.9rem;
-}
-
-.home-guild-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  object-fit: cover;
-  border: 2px solid rgba(148, 163, 184, 0.7);
-}
-
-.home-guild-text {
-  min-width: 0;
-}
-
-.home-guild-name {
-  font-size: 0.98rem;
-  font-weight: 600;
-  margin-bottom: 0.15rem;
-}
-
-.home-guild-meta {
-  font-size: 0.78rem;
-  color: #9ca3af;
-  margin-bottom: 0.25rem;
-}
-
-.home-guild-status {
-  font-size: 0.78rem;
-  color: #cbd5f5;
-}
-
-.home-guild-status--ok {
-  color: #bbf7d0;
-}
-
-.home-guild-status--limit {
-  color: #fbbf24;
-}
-
-.home-guild-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.4rem;
-}
-
-.home-guild-btn {
-  padding: 0.45rem 0.9rem;
-  border-radius: 999px;
-  border: none;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.home-guild-btn--primary {
-  background: #2563eb;
-  color: white;
-  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.5);
-}
-
-.home-guild-btn--primary:hover {
-  background: #3b82f6;
-}
-
-.home-guild-btn--ghost {
-  background: transparent;
-  color: #e5e7eb;
-  border: 1px solid rgba(148, 163, 184, 0.7);
-}
-
-.home-guild-btn--ghost:hover {
-  background: rgba(15, 23, 42, 0.9);
-}
-
-.home-guild-btn--disabled {
-  background: #111827;
-  color: #6b7280;
-  border: 1px solid rgba(75, 85, 99, 0.9);
-  cursor: not-allowed;
-}
-
-/* health debug */
-
-.home-health-debug {
-  margin-top: 2rem;
-  font-size: 0.78rem;
-  color: #9ca3af;
-}
-
-.home-health-debug pre {
-  margin: 0;
-  padding: 0.8rem 0.9rem;
-  background: rgba(15, 23, 42, 0.95);
-  border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.6);
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 768px) {
-  .home-shell {
-    padding: 2.8rem 1rem 3.5rem;
-  }
-
-  .home-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .home-user-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .home-guild-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .home-guild-actions {
-    align-items: flex-start;
-  }
-}
-
-/* ===================================== */
+ /* ===================================== */
 /*           DASHBOARD (Home)            */
-/*    Landing-szerű, tiszta dizájn      */
+/*   Sötét, üveges, "baszó" dizájn       */
 /* ===================================== */
 
 .dash-root {
   min-height: 100vh;
-  background: #f3f4f6; /* ugyanaz a "világos" hangulat, mint a landing alsó része */
-  color: #111827;
+  background:
+    radial-gradient(120% 80% at 50% -10%, #020617 0%, #020617 55%, #020617 100%),
+    #020617;
+  color: #e5e7eb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
 }
 
-/* konténer – felül sötét, alul világos, közte egy hullámos elválasztó */
+/* konténer */
 
 .dash-shell {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
+  padding: 3rem 1.5rem 4rem;
   position: relative;
 }
 
-/* sötét header háttér + hullámos vágás alul */
+/* finom „glow” a háttérben */
+
 .dash-shell::before {
   content: "";
-  position: absolute;
-  inset: 0;
-  top: 0;
+  position: fixed;
+  inset: auto;
+  top: -120px;
   left: 50%;
   transform: translateX(-50%);
-  max-width: 1400px;
-  height: 220px;
-  background: #020617; /* ugyanaz a sötét, mint a landing tetején */
-  z-index: -2;
-}
-
-/* "hullám" – csak egy finom görbe, mint a landingnél */
-.dash-shell::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 1400px;
-  width: 100%;
-  top: 210px;
-  height: 40px;
+  width: 900px;
+  height: 380px;
   background: radial-gradient(
-    120% 80% at 50% 0%,
-    #020617 0%,
-    #020617 40%,
-    transparent 60%
+    60% 80% at 50% 0%,
+    rgba(37, 99, 235, 0.55),
+    transparent 70%
   );
-  z-index: -1;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: -2;
 }
 
 /* FELSŐ SOR – VOIDBOT + userkártya */
@@ -389,43 +52,95 @@
   display: flex;
   justify-content: space-between;
   gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-/* Bal – VOIDBOT blokk, kicsit olyan, mint a landing hero szövege */
+/* általános „glass card” stílus */
+
+.dash-glass {
+  background: radial-gradient(circle at top left, #0b1120, #020617);
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(15, 23, 42, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-glass::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.12), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(34, 197, 94, 0.1), transparent 55%);
+  opacity: 0.9;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.dash-card-hover {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease,
+    background 0.2s ease;
+}
+
+.dash-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(59, 130, 246, 0.5);
+  border-color: rgba(129, 140, 248, 0.8);
+}
+
+/* Bal – VOIDBOT blokk */
 
 .dash-brand-card {
+  composes: dash-glass dash-card-hover;
   flex: 1;
-  max-width: 460px;
-  border-radius: 18px;
-  padding: 1.4rem 1.6rem;
-  background: #020617;
-  color: #f9fafb;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(31, 41, 55, 0.95);
+  max-width: 480px;
+  padding: 1.6rem 1.8rem;
+  background: radial-gradient(circle at top left, #020617, #020617);
 }
 
 .dash-brand-pill {
-  display: inline-block;
-  padding: 0.2rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 999px;
-  background: #111827;
-  color: #a5b4fc;
-  font-size: 0.75rem;
-  letter-spacing: 0.18em;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(59, 130, 246, 0.7);
+  color: #bfdbfe;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
+.dash-brand-pill::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+}
+
 .dash-brand-title {
-  margin: 0.6rem 0 0.2rem;
-  font-size: 1.4rem;
+  margin: 0.7rem 0 0.25rem;
+  font-size: 1.6rem;
   font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .dash-brand-sub {
   margin: 0;
-  font-size: 0.85rem;
-  color: #e5e7eb;
+  font-size: 0.88rem;
+  color: #9ca3af;
   max-width: 30rem;
 }
 
@@ -434,21 +149,17 @@
 .dash-user-wrapper {
   display: flex;
   align-items: stretch;
-  gap: 0.7rem;
+  gap: 0.9rem;
 }
 
 .dash-user-card {
-  background: #020617;
-  color: #f9fafb;
-  border-radius: 16px;
-  padding: 0.9rem 1.2rem;
+  composes: dash-glass dash-card-hover;
   min-width: 260px;
+  padding: 1rem 1.3rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 0.4rem;
-  border: 1px solid rgba(31, 41, 55, 0.95);
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
+  gap: 0.6rem;
 }
 
 .dash-user-left {
@@ -458,11 +169,12 @@
 }
 
 .dash-user-avatar {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   border-radius: 999px;
   overflow: hidden;
-  border: 2px solid #4b5563;
+  border: 2px solid rgba(148, 163, 184, 0.9);
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.9);
   flex-shrink: 0;
 }
 
@@ -482,17 +194,18 @@
 }
 
 .dash-user-tag {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #9ca3af;
 }
 
 .dash-user-plan {
+  margin-top: 0.15rem;
   font-size: 0.78rem;
-  margin-top: 0.1rem;
   color: #9ca3af;
 }
 
 .dash-user-plan span {
+  color: #22c55e;
   font-weight: 600;
 }
 
@@ -501,58 +214,75 @@
   color: #e5e7eb;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
   opacity: 0.9;
 }
 
 .dash-status-dot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 999px;
-  background: #9ca3af;
+  background: #6b7280;
+  box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.95);
 }
 
 .dash-status-dot--ok {
   background: #22c55e;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
 }
 
 .dash-status-dot--error {
   background: #ef4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.9);
 }
 
 .dash-status-dot--loading {
   background: #facc15;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.9);
 }
 
-/* fekete kis négyzet – lenyíló menü */
+/* menü gomb */
 
 .dash-menu-wrapper {
   position: relative;
 }
 
 .dash-menu-toggle {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: #020617;
-  border: 1px solid #1f2937;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: radial-gradient(circle at top left, #020617, #020617);
+  border: 1px solid rgba(55, 65, 81, 0.9);
   color: #e5e7eb;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease,
+    background 0.2s ease;
 }
+
+.dash-menu-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+  border-color: rgba(129, 140, 248, 0.9);
+}
+
+/* dropdown */
 
 .dash-menu-dropdown {
   position: absolute;
   right: 0;
-  top: 50px;
-  min-width: 180px;
-  border-radius: 12px;
-  padding: 0.3rem;
+  top: 52px;
+  min-width: 190px;
+  border-radius: 14px;
+  padding: 0.35rem;
   background: #020617;
-  border: 1px solid #1f2937;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(55, 65, 81, 0.95);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.95);
   z-index: 40;
 }
 
@@ -561,8 +291,8 @@
   border: none;
   background: transparent;
   color: #e5e7eb;
-  padding: 0.45rem 0.7rem;
-  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  border-radius: 9px;
   font-size: 0.85rem;
   display: flex;
   align-items: center;
@@ -571,7 +301,7 @@
 }
 
 .dash-menu-item:hover {
-  background: #111827;
+  background: rgba(17, 24, 39, 0.95);
 }
 
 .dash-menu-item--danger {
@@ -581,20 +311,22 @@
 .dash-menu-sep {
   height: 1px;
   margin: 0.25rem 0;
-  background: #111827;
+  background: rgba(17, 24, 39, 0.9);
 }
 
-/* KÉK NAV SÁV – a hosszú kék csík a rajzodon */
+/* KÉK NAV SÁV */
 
 .dash-nav-bar {
-  margin-top: 1.3rem;
-  margin-bottom: 1.6rem;
-  background: #1d4ed8; /* tiszta kék csík */
+  margin-top: 1.7rem;
+  margin-bottom: 1.8rem;
+  background: radial-gradient(circle at top left, #1d4ed8, #1e40af);
   border-radius: 999px;
-  padding: 0.18rem;
+  padding: 0.22rem;
   display: flex;
-  gap: 0.25rem;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.5);
+  gap: 0.3rem;
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.8),
+    0 0 0 1px rgba(37, 99, 235, 0.8);
 }
 
 .dash-nav-item {
@@ -603,46 +335,48 @@
   color: #e5e7eb;
   font-size: 0.82rem;
   font-weight: 500;
-  padding: 0.35rem 1rem;
+  padding: 0.38rem 1.1rem;
   border-radius: 999px;
   cursor: pointer;
   white-space: nowrap;
+  transition: background 0.16s ease, color 0.16s ease, transform 0.12s ease;
+}
+
+.dash-nav-item:hover {
+  transform: translateY(-1px);
 }
 
 .dash-nav-item--active {
   background: #f9fafb;
-  color: #1f2937;
+  color: #0f172a;
 }
 
 /* =========================== */
-/*   KEZDŐLAP / „Hírek” rész   */
+/*   KEZDŐLAP / OVERVIEW       */
 /* =========================== */
 
 .dash-overview {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
-  gap: 1.2rem;
+  gap: 1.3rem;
 }
 
-.dash-overview-main,
-.dash-overview-side,
-.dash-coming-card {
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 1.3rem 1.5rem;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+/* Bal oszlop */
+
+.dash-overview-main {
+  composes: dash-glass dash-card-hover;
+  padding: 1.5rem 1.7rem;
 }
 
 .dash-overview-main h2 {
   margin: 0 0 0.4rem;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
 }
 
 .dash-overview-main p {
-  margin: 0 0 0.8rem;
+  margin: 0 0 1rem;
   font-size: 0.9rem;
-  color: #4b5563;
+  color: #9ca3af;
 }
 
 .dash-changelog {
@@ -650,54 +384,62 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.35rem;
+  gap: 0.45rem;
   font-size: 0.88rem;
 }
 
 .dash-changelog li {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  color: #374151;
+  gap: 0.5rem;
+  color: #e5e7eb;
 }
 
 .dash-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.12rem 0.55rem;
+  padding: 0.15rem 0.6rem;
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 600;
 }
 
 .dash-chip--new {
-  background: #ecfdf3;
-  color: #16a34a;
+  background: rgba(22, 163, 74, 0.12);
+  color: #4ade80;
 }
 
 .dash-chip--soon {
-  background: #fffbeb;
-  color: #d97706;
+  background: rgba(234, 179, 8, 0.12);
+  color: #facc15;
+}
+
+/* Jobb oszlop – rendszer állapot */
+
+.dash-overview-side {
+  composes: dash-glass dash-card-hover;
+  padding: 1.4rem 1.5rem;
 }
 
 .dash-overview-side h3 {
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.5rem;
   font-size: 0.98rem;
 }
 
 .dash-overview-status {
-  margin: 0 0 0.7rem;
+  margin: 0 0 0.8rem;
   font-size: 0.86rem;
-  color: #4b5563;
+  color: #9ca3af;
 }
 
 .dash-overview-health {
   margin: 0;
-  padding: 0.6rem 0.8rem;
+  padding: 0.7rem 0.8rem;
   font-size: 0.76rem;
   border-radius: 12px;
-  background: #111827;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(55, 65, 81, 0.9);
   color: #e5e7eb;
   max-height: 220px;
   overflow: auto;
@@ -708,78 +450,89 @@
 /* =========================== */
 
 .dash-grid-section {
-  margin-top: 0.7rem;
+  margin-top: 1.8rem;
 }
 
 .dash-grid-header h2 {
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.25rem;
   font-size: 1.05rem;
 }
 
 .dash-grid-header p {
   margin: 0;
   font-size: 0.86rem;
-  color: #4b5563;
+  color: #9ca3af;
 }
+
+.dash-grid-header code {
+  font-size: 0.8rem;
+  background: rgba(15, 23, 42, 0.9);
+  padding: 0.1rem 0.3rem;
+  border-radius: 6px;
+  border: 1px solid rgba(55, 65, 81, 0.9);
+}
+
+/* info boxok */
 
 .dash-info-box {
   margin-top: 1rem;
   padding: 0.9rem 1rem;
   border-radius: 14px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: rgba(30, 64, 175, 0.16);
+  border: 1px solid rgba(129, 140, 248, 0.5);
   font-size: 0.86rem;
-  color: #1e3a8a;
+  color: #c7d2fe;
 }
 
 .dash-info-box--error {
-  background: #fef2f2;
-  border-color: #fecaca;
-  color: #b91c1c;
+  background: rgba(127, 29, 29, 0.25);
+  border-color: rgba(248, 113, 113, 0.9);
+  color: #fecaca;
 }
 
 .dash-info-detail {
   display: block;
   font-size: 0.8rem;
-  opacity: 0.85;
-  margin-top: 0.2rem;
+  opacity: 0.9;
+  margin-top: 0.25rem;
 }
 
 .dash-free-note {
-  margin-top: 0.8rem;
+  margin-top: 0.9rem;
   font-size: 0.86rem;
-  color: #374151;
+  color: #e5e7eb;
+  opacity: 0.9;
 }
 
+/* grid */
+
 .dash-grid {
-  margin-top: 1rem;
+  margin-top: 1.1rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1rem;
 }
 
 .dash-card {
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 1rem 1.1rem;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  composes: dash-glass dash-card-hover;
+  padding: 1rem 1.2rem;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 0.75rem;
 }
 
 .dash-card-main {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.8rem;
 }
 
 .dash-card-icon {
   width: 48px;
   height: 48px;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
-  background: #e5e7eb;
+  background: #111827;
+  border: 1px solid rgba(75, 85, 99, 0.9);
   flex-shrink: 0;
 }
 
@@ -790,14 +543,14 @@
 }
 
 .dash-card-text h3 {
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.22rem;
   font-size: 0.96rem;
 }
 
 .dash-card-text p {
   margin: 0 0 0.25rem;
-  font-size: 0.84rem;
-  color: #6b7280;
+  font-size: 0.82rem;
+  color: #9ca3af;
 }
 
 .dash-card-status {
@@ -806,26 +559,28 @@
 
 .dash-pill {
   display: inline-block;
-  padding: 0.1rem 0.6rem;
+  padding: 0.12rem 0.65rem;
   border-radius: 999px;
   font-size: 0.76rem;
-  color: #374151;
-  background: #f3f4f6;
+  color: #e5e7eb;
+  background: rgba(31, 41, 55, 0.9);
 }
 
 .dash-pill--ok {
-  background: #ecfdf3;
-  color: #16a34a;
+  background: rgba(22, 163, 74, 0.16);
+  color: #4ade80;
 }
 
 .dash-pill--limit {
-  background: #fef2f2;
-  color: #b91c1c;
+  background: rgba(127, 29, 29, 0.3);
+  color: #fecaca;
 }
+
+/* action gombok */
 
 .dash-card-actions {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.45rem;
   flex-wrap: wrap;
 }
 
@@ -834,42 +589,47 @@
   border: none;
   font-size: 0.8rem;
   font-weight: 600;
-  padding: 0.4rem 0.95rem;
+  padding: 0.42rem 1rem;
   cursor: pointer;
   white-space: nowrap;
+  transition: transform 0.12s ease, box-shadow 0.15s ease,
+    background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .dash-btn--primary {
-  background: #2563eb;
+  background: linear-gradient(135deg, #2563eb, #22c55e);
   color: #f9fafb;
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.7);
 }
 
 .dash-btn--primary:hover {
-  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(37, 99, 235, 0.9);
 }
 
 .dash-btn--ghost {
-  background: #ffffff;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: transparent;
+  color: #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.7);
 }
 
 .dash-btn--ghost:hover {
-  background: #f3f4f6;
+  background: rgba(15, 23, 42, 0.9);
 }
 
 .dash-btn--disabled {
-  background: #e5e7eb;
+  background: rgba(31, 41, 55, 0.9);
   color: #6b7280;
-  border: 1px solid #d1d5db;
+  border: 1px solid rgba(55, 65, 81, 0.9);
   cursor: not-allowed;
 }
 
-/* „+ új modul” ghost kártya */
+/* ghost kártya */
 
 .dash-card--ghost {
   border-style: dashed;
-  text-align: left;
+  border-color: rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.85);
 }
 
 .dash-card-ghost-title {
@@ -878,15 +638,20 @@
 }
 
 .dash-card-ghost-text {
-  margin-top: 0.3rem;
+  margin-top: 0.35rem;
   font-size: 0.84rem;
-  color: #6b7280;
+  color: #9ca3af;
 }
 
 /* „Hamarosan” szekciók */
 
 .dash-coming {
-  margin-top: 0.7rem;
+  margin-top: 1.8rem;
+}
+
+.dash-coming-card {
+  composes: dash-glass dash-card-hover;
+  padding: 1.4rem 1.6rem;
 }
 
 .dash-coming-card h2 {
@@ -897,12 +662,12 @@
 .dash-coming-card p {
   margin: 0 0 0.4rem;
   font-size: 0.88rem;
-  color: #4b5563;
+  color: #9ca3af;
 }
 
 .dash-coming-tag {
   font-size: 0.82rem;
-  color: #2563eb;
+  color: #60a5fa;
 }
 
 /* RESPONSIVE */
@@ -919,10 +684,16 @@
 
 @media (max-width: 640px) {
   .dash-shell {
-    padding: 2rem 1rem 3rem;
+    padding: 2.4rem 1.1rem 3rem;
   }
 
   .dash-nav-bar {
-    border-radius: 14px;
+    border-radius: 18px;
+    padding: 0.18rem;
+    overflow-x: auto;
+  }
+
+  .dash-nav-item {
+    flex-shrink: 0;
   }
 }
