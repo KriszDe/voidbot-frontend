@@ -41,7 +41,7 @@ type BotLogEntry = {
 };
 
 // ---- LOG TEMPLATE típusok a konfigurációhoz ----
-type LogEventType = "join" | "leave" | "death" | "chat" | "admin";
+type LogEventType = "join" | "leave" ;
 
 type LogTemplateField = {
   id: string;
@@ -928,19 +928,27 @@ function CommandCreator({
 
 // ---- LOGOK FÜL – konfiguráció + preview + terminal nézet ----
 
-const LOG_EVENTS: { id: LogEventType; label: string; description: string }[] = [
-  { id: "join", label: "Join", description: "Amikor játékos belép a szerverre" },
-  { id: "leave", label: "Leave", description: "Amikor játékos kilép a szerverről" },
-  { id: "death", label: "Death", description: "Halál / respawn log" },
-  { id: "chat", label: "Chat", description: "OOC / IC chat logok" },
-  { id: "admin", label: "Admin", description: "Kick / ban / warn log" },
+const LOG_EVENTS: {
+  id: LogEventType;
+  label: string;
+  description: string;
+}[] = [
+  {
+    id: "join",
+    label: "Csatlakozás",
+    description: "Amikor játékos belép a FiveM szerverre",
+  },
+  {
+    id: "leave",
+    label: "Kilépés",
+    description: "Amikor játékos kilép a FiveM szerverről",
+  },
 ];
 
 // TODO: cseréld majd le backendről jövő csatornalistára
 const MOCK_CHANNELS = [
   { id: "chan1", name: "#logok" },
-  { id: "chan2", name: "#admin-log" },
-  { id: "chan3", name: "#join-leave" },
+  { id: "chan2", name: "#join-leave" },
 ];
 
 function LogsSection({
@@ -958,16 +966,11 @@ function LogsSection({
         event: "join",
         channelId: null,
         color: "#22c55e",
-        title: "Join",
-        description: "{playerName} has joined the server.",
+        title: "Player joined",
+        description: "{discordTag} csatlakozott a FiveM szerverre.",
         footer: "VOIDBOT logs • {timestamp}",
+        // NINCS külön playerName field – csak Discord, Server ID
         fields: [
-          {
-            id: "player",
-            label: "Player",
-            value: "{playerName}",
-            enabled: true,
-          },
           {
             id: "discord",
             label: "Discord",
@@ -986,8 +989,8 @@ function LogsSection({
         event: "leave",
         channelId: null,
         color: "#ef4444",
-        title: "Leave",
-        description: "{playerName} has left the server.",
+        title: "Player left",
+        description: "{discordTag} kilépett a FiveM szerverről.",
         footer: "VOIDBOT logs • {timestamp}",
         fields: [
           {
@@ -1006,90 +1009,6 @@ function LogsSection({
             id: "postal",
             label: "Nearest Postal",
             value: "{postal}",
-            enabled: true,
-          },
-        ],
-      },
-      death: {
-        event: "death",
-        channelId: null,
-        color: "#a855f7",
-        title: "Death",
-        description: "{playerName} died. Cause: {cause}",
-        footer: "VOIDBOT logs • {timestamp}",
-        fields: [
-          {
-            id: "cause",
-            label: "Cause",
-            value: "{cause}",
-            enabled: true,
-          },
-          {
-            id: "weapon",
-            label: "Weapon",
-            value: "{weapon}",
-            enabled: false,
-          },
-          {
-            id: "location",
-            label: "Location",
-            value: "{postal}",
-            enabled: true,
-          },
-        ],
-      },
-      chat: {
-        event: "chat",
-        channelId: null,
-        color: "#3b82f6",
-        title: "Chat log",
-        description: "{discordTag}: {message}",
-        footer: "VOIDBOT logs • {timestamp}",
-        fields: [
-          {
-            id: "channel",
-            label: "Channel",
-            value: "{chatChannel}",
-            enabled: true,
-          },
-          {
-            id: "steam",
-            label: "Steam Hex",
-            value: "{steamHex}",
-            enabled: false,
-          },
-          {
-            id: "license",
-            label: "License",
-            value: "{license}",
-            enabled: false,
-          },
-        ],
-      },
-      admin: {
-        event: "admin",
-        channelId: null,
-        color: "#f97316",
-        title: "Admin action",
-        description: "{staffTag} used {action} on {playerName}",
-        footer: "VOIDBOT logs • {timestamp}",
-        fields: [
-          {
-            id: "staff",
-            label: "Staff",
-            value: "{staffTag}",
-            enabled: true,
-          },
-          {
-            id: "action",
-            label: "Action",
-            value: "{action}",
-            enabled: true,
-          },
-          {
-            id: "reason",
-            label: "Reason",
-            value: "{reason}",
             enabled: true,
           },
         ],
@@ -1130,9 +1049,9 @@ function LogsSection({
       <article className="home-card">
         <h2 className="home-card-title">Logok</h2>
         <p className="home-card-text">
-          Itt tudod beállítani, hogy a VOIDBOT milyen **Discord embed**-et
-          küldjön a kiválasztott log csatornába. Bal oldalt esemény típus,
-          középen beállítások, jobb oldalt élő előnézet.
+          Itt tudod beállítani, hogy a VOIDBOT milyen <b>Discord embed</b>-et
+          küldjön a kiválasztott log csatornába. Bal oldalt eseményt választasz
+          (Join / Leave), középen szerkeszted, jobb oldalt előnézet.
         </p>
 
         {/* FŐ LAYOUT – 3 oszlop */}
@@ -1147,12 +1066,16 @@ function LogsSection({
                   type="button"
                   className={
                     "home-log-event-btn" +
-                    (selectedEvent === ev.id ? " home-log-event-btn--active" : "")
+                    (selectedEvent === ev.id
+                      ? " home-log-event-btn--active"
+                      : "")
                   }
                   onClick={() => setSelectedEvent(ev.id)}
                 >
                   <span className="home-log-event-label">{ev.label}</span>
-                  <span className="home-log-event-desc">{ev.description}</span>
+                  <span className="home-log-event-desc">
+                    {ev.description}
+                  </span>
                 </button>
               ))}
             </div>
@@ -1178,7 +1101,6 @@ function LogsSection({
                 ))}
               </select>
               <p className="home-log-small">
-                {/* TODO: ha backendből jönnek a csatornák, itt tudjuk jelezni az éles állapotot */}
                 Később ezt a listát a szerver tényleges csatornáiból töltjük.
               </p>
             </div>
@@ -1197,7 +1119,7 @@ function LogsSection({
                   onChange={(e) =>
                     updateTemplate({ title: e.target.value })
                   }
-                  placeholder="pl. Leave"
+                  placeholder="pl. Player joined"
                 />
               </div>
 
@@ -1217,7 +1139,7 @@ function LogsSection({
                     onChange={(e) =>
                       updateTemplate({ color: e.target.value })
                     }
-                    placeholder="#ef4444"
+                    placeholder="#22c55e"
                   />
                 </div>
               </div>
@@ -1231,11 +1153,13 @@ function LogsSection({
                 onChange={(e) =>
                   updateTemplate({ description: e.target.value })
                 }
-                placeholder="{playerName} has left the server."
+                placeholder="{discordTag} csatlakozott a FiveM szerverre."
               />
               <small className="home-log-small">
                 Használható változók:{" "}
-                <code>{`{playerName} {discordTag} {reason} {serverId} {postal} {ping} {timestamp} ...`}</code>
+                <code>
+                  {`{discordTag} {serverId} {reason} {postal} {ping} {timestamp} ...`}
+                </code>
               </small>
             </div>
 
@@ -1243,7 +1167,7 @@ function LogsSection({
               <div className="home-log-fields-header">
                 <h4>Mezők</h4>
                 <span className="home-log-small">
-                  Ezek lesznek az embed “fieldjei” (Player, Ping, License, stb.)
+                  Ezek lesznek az embed “fieldjei” (Reason, Ping, Postal, stb.)
                 </span>
               </div>
 
@@ -1308,7 +1232,7 @@ function LogsSection({
                 className="home-btn-inline home-btn-inline--primary"
                 // TODO: ide jön majd a mentés backendre
               >
-                Mentés (csak UI, teszt)
+                Mentés (UI only)
               </button>
             </div>
           </div>
@@ -1328,21 +1252,22 @@ function LogsSection({
               <div className="home-log-preview-card">
                 <div className="home-log-preview-header">
                   <span className="home-log-preview-title">
-                    {currentTemplate.title || "Leave"}
+                    {currentTemplate.title || "Player joined"}
                   </span>
                 </div>
 
                 <div className="home-log-preview-body">
                   <p className="home-log-preview-description">
-                    {/* mock adatokkal renderelt description */}
                     {currentTemplate.description
-                      .replaceAll("{playerName}", "tontoo__x3")
-                      .replaceAll("{reason}", "Exiting")
                       .replaceAll("{discordTag}", "@unc.tonto")
                       .replaceAll("{serverId}", "2")
+                      .replaceAll("{reason}", "Exiting")
                       .replaceAll("{postal}", "9151")
                       .replaceAll("{ping}", "22")
-                      .replaceAll("{timestamp}", "2024. 04. 18. 13:33")}
+                      .replaceAll(
+                        "{timestamp}",
+                        "2024. 04. 18. 13:33"
+                      )}
                   </p>
 
                   <div className="home-log-preview-fields">
@@ -1358,12 +1283,11 @@ function LogsSection({
                           </div>
                           <div className="home-log-preview-field-value">
                             {field.value
-                              .replaceAll("{playerName}", "tontoo__x3")
                               .replaceAll("{discordTag}", "@unc.tonto")
                               .replaceAll("{serverId}", "2")
+                              .replaceAll("{reason}", "Exiting")
                               .replaceAll("{postal}", "9151")
                               .replaceAll("{ping}", "22")
-                              .replaceAll("{reason}", "Exiting")
                               .replaceAll(
                                 "{timestamp}",
                                 "2024. 04. 18. 13:33"
@@ -1377,8 +1301,10 @@ function LogsSection({
                 <div className="home-log-preview-footer">
                   <span className="home-log-preview-footer-text">
                     {currentTemplate.footer
-                      .replaceAll("{timestamp}", "2024. 04. 18. 13:33") ||
-                      "VOIDBOT logs • 2024. 04. 18. 13:33"}
+                      .replaceAll(
+                        "{timestamp}",
+                        "2024. 04. 18. 13:33"
+                      ) || "VOIDBOT logs • 2024. 04. 18. 13:33"}
                   </span>
                 </div>
               </div>
@@ -1438,6 +1364,7 @@ function LogsSection({
     </section>
   );
 }
+
 
 function ComingSoonSection(props: { title: string; description: string }) {
   return (
