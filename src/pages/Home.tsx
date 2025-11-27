@@ -729,9 +729,14 @@ function TabButton(props: {
   );
 }
 
-function CommandCreator({ activeGuild }: { activeGuild: DiscordGuild | null }) {
+function CommandCreator({
+  activeGuild,
+}: {
+  activeGuild: DiscordGuild | null;
+}) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -748,8 +753,8 @@ function CommandCreator({ activeGuild }: { activeGuild: DiscordGuild | null }) {
       return;
     }
 
-    if (!name || !description) {
-      setErr("Név és leírás kötelező.");
+    if (!name || !description || !reply) {
+      setErr("Név, leírás és válasz szöveg kötelező.");
       return;
     }
 
@@ -759,7 +764,12 @@ function CommandCreator({ activeGuild }: { activeGuild: DiscordGuild | null }) {
       const res = await fetch(`${BOT_API_BASE}/api/commands`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description }),
+        body: JSON.stringify({
+          name,
+          description,
+          reply,
+          guildId: activeGuild.id,
+        }),
       });
 
       const json = await res.json();
@@ -768,9 +778,10 @@ function CommandCreator({ activeGuild }: { activeGuild: DiscordGuild | null }) {
         throw new Error(json.error || "Ismeretlen hiba");
       }
 
-      setMsg(`Command létrehozva: /${name}`);
+      setMsg(`Command létrehozva: /${json.name}`);
       setName("");
       setDescription("");
+      setReply("");
     } catch (error: any) {
       console.error(error);
       setErr(error?.message || "Nem sikerült létrehozni a commandot.");
@@ -802,23 +813,35 @@ function CommandCreator({ activeGuild }: { activeGuild: DiscordGuild | null }) {
               <label>Command név</label>
               <input
                 type="text"
-                placeholder="pl. ping"
+                placeholder="pl. giveway"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={loading}
               />
               <small>Csak kisbetű, szám, -, _ ; max 32 karakter.</small>
             </div>
+
             <div className="home-command-field">
               <label>Leírás</label>
               <input
                 type="text"
-                placeholder="pl. Visszadob egy pongot."
+                placeholder="pl. Nyereményjátékhoz csatlakozás."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={loading}
               />
             </div>
+          </div>
+
+          <div className="home-command-field">
+            <label>Válasz, amit a bot írjon</label>
+            <input
+              type="text"
+              placeholder="pl. 🎉 Sikeresen csatlakoztál a nyereményjátékhoz!"
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+              disabled={loading}
+            />
           </div>
 
           <button
@@ -841,6 +864,7 @@ function CommandCreator({ activeGuild }: { activeGuild: DiscordGuild | null }) {
     </section>
   );
 }
+
 
 function ComingSoonSection(props: { title: string; description: string }) {
   return (
