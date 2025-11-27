@@ -7,6 +7,11 @@ type HealthResponse = {
   message: string;
 };
 
+type DiscordChannel = {
+  id: string;
+  name: string;
+};
+
 type DiscordUser = {
   id: string;
   username: string;
@@ -31,6 +36,7 @@ type LinkedGuildMeta = {
 };
 
 type LogsStatus = "idle" | "loading" | "ok" | "error";
+type ChannelsStatus = "idle" | "loading" | "ok" | "error";
 
 type BotLogEntry = {
   id: string;
@@ -41,7 +47,7 @@ type BotLogEntry = {
 };
 
 // ---- LOG TEMPLATE típusok a konfigurációhoz ----
-type LogEventType = "join" | "leave" ;
+type LogEventType = "join" | "leave";
 
 type LogTemplateField = {
   id: string;
@@ -100,6 +106,10 @@ export default function Home() {
 
   const [logs, setLogs] = useState<BotLogEntry[]>([]);
   const [logsStatus, setLogsStatus] = useState<LogsStatus>("idle");
+
+  const [channels, setChannels] = useState<DiscordChannel[]>([]);
+  const [channelsStatus, setChannelsStatus] =
+    useState<ChannelsStatus>("idle");
 
   // ---- backend health ----
   useEffect(() => {
@@ -192,6 +202,11 @@ export default function Home() {
     }
   }, [linkedGuilds]);
 
+  const activeGuild = useMemo(
+    () => guilds.find((g) => g.id === activeGuildId) || null,
+    [guilds, activeGuildId]
+  );
+
   // ---- logok betöltése, amikor a Logok fül aktív ----
   useEffect(() => {
     if (activeTab !== "logs") return;
@@ -222,6 +237,37 @@ export default function Home() {
       aborted = true;
     };
   }, [activeTab]);
+
+  // ---- csatornák betöltése Logok fülhöz ----
+  useEffect(() => {
+    if (activeTab !== "logs" || !activeGuild) return;
+
+    let aborted = false;
+
+    const run = async () => {
+      try {
+        setChannelsStatus("loading");
+        const res = await fetch(
+          `${BOT_API_BASE}/api/guilds/${activeGuild.id}/channels`
+        );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (aborted) return;
+
+        setChannels((data.channels as DiscordChannel[]) || []);
+        setChannelsStatus("ok");
+      } catch (e) {
+        console.error(e);
+        if (!aborted) setChannelsStatus("error");
+      }
+    };
+
+    run();
+
+    return () => {
+      aborted = true;
+    };
+  }, [activeTab, activeGuild?.id]);
 
   const avatarUrl = user?.avatar
     ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`
@@ -284,11 +330,6 @@ export default function Home() {
     !!activeGuildId &&
     guilds.some((g) => g.id === activeGuildId) &&
     guilds.length > 0;
-
-  const activeGuild = useMemo(
-    () => guilds.find((g) => g.id === activeGuildId) || null,
-    [guilds, activeGuildId]
-  );
 
   const activeGuildMeta: LinkedGuildMeta | null = activeGuildId
     ? linkedGuilds[activeGuildId] ?? null
@@ -764,7 +805,13 @@ export default function Home() {
         )}
 
         {activeTab === "logs" && (
-          <LogsSection logs={logs} status={logsStatus} />
+          <LogsSection
+            logs={logs}
+            status={logsStatus}
+            channels={channels}
+            channelsStatus={channelsStatus}
+            activeGuild={activeGuild}
+          />
         )}
       </div>
     </main>
@@ -945,18 +992,18 @@ const LOG_EVENTS: {
   },
 ];
 
-// TODO: cseréld majd le backendről jövő csatornalistára
-const MOCK_CHANNELS = [
-  { id: "chan1", name: "#logok" },
-  { id: "chan2", name: "#join-leave" },
-];
-
 function LogsSection({
   logs,
   status,
+  channels,
+  channelsStatus,
+  activeGuild,
 }: {
   logs: BotLogEntry[];
   status: LogsStatus;
+  channels: DiscordChannel[];
+  channelsStatus: ChannelsStatus;
+  activeGuild: DiscordGuild | null;
 }) {
   const [selectedEvent, setSelectedEvent] = useState<LogEventType>("leave");
 
@@ -969,7 +1016,6 @@ function LogsSection({
         title: "Player joined",
         description: "{discordTag} csatlakozott a FiveM szerverre.",
         footer: "VOIDBOT logs • {timestamp}",
-        // NINCS külön playerName field – csak Discord, Server ID
         fields: [
           {
             id: "discord",
@@ -1016,6 +1062,10 @@ function LogsSection({
     })
   );
 
+  const [testLoading, setTestLoading] = useState(false);
+  const [testMsg, setTestMsg] = useState<string | null>(null);
+  const [testErr, setTestErr] = useState<string | null>(null);
+
   const currentTemplate = templates[selectedEvent];
 
   const updateTemplate = (patch: Partial<LogTemplate>) => {
@@ -1042,6 +1092,56 @@ function LogsSection({
         },
       };
     });
+  };
+
+  const handleSendTest = async () => {
+    setTestMsg(null);
+    setTestErr(null);
+
+    if (!activeGuild) {
+      setTestErr("Először válassz egy aktív szervert a Szerverek fülön.");
+      return;
+    }
+
+    if (!currentTemplate.channelId) {
+      setTestErr("Válassz egy log csatornát.");
+      return;
+    }
+
+    try {
+      setTestLoading(true);
+
+      const res = await fetch(`${BOT_API_BASE}/api/logs/test`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          guildId: activeGuild.id,
+          channelId: currentTemplate.channelId,
+          title: currentTemplate.title,
+          description: currentTemplate.description,
+          color: currentTemplate.color,
+          footer: currentTemplate.footer,
+          fields: currentTemplate.fields
+            .filter((f) => f.enabled)
+            .map((f) => ({
+              name: f.label,
+              value: f.value,
+            })),
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error || `HTTP ${res.status}`);
+      }
+
+      setTestMsg("Teszt log elküldve a kiválasztott csatornába.");
+    } catch (e: any) {
+      console.error(e);
+      setTestErr(e?.message || "Nem sikerült elküldeni a teszt logot.");
+    } finally {
+      setTestLoading(false);
+    }
   };
 
   return (
@@ -1092,16 +1192,25 @@ function LogsSection({
                     channelId: e.target.value || null,
                   })
                 }
+                disabled={!activeGuild || channelsStatus === "loading"}
               >
-                <option value="">Nincs beállítva</option>
-                {MOCK_CHANNELS.map((ch) => (
+                <option value="">
+                  {!activeGuild
+                    ? "Először válassz egy aktív szervert"
+                    : channelsStatus === "loading"
+                    ? "Csatornák betöltése…"
+                    : channelsStatus === "error"
+                    ? "Hiba a csatornák betöltésekor"
+                    : "Nincs beállítva"}
+                </option>
+                {channels.map((ch) => (
                   <option key={ch.id} value={ch.id}>
                     {ch.name}
                   </option>
                 ))}
               </select>
               <p className="home-log-small">
-                Később ezt a listát a szerver tényleges csatornáiból töltjük.
+                A lista a szerver tényleges text csatornáiból jön.
               </p>
             </div>
           </div>
@@ -1223,18 +1332,29 @@ function LogsSection({
               <button
                 type="button"
                 className="home-btn-inline home-btn-inline--ghost"
-                // TODO: ide jön majd a "teszt üzenet küldése" backend hívás
+                onClick={handleSendTest}
+                disabled={testLoading || !activeGuild}
               >
-                Teszt üzenet küldése
+                {testLoading ? "Teszt küldése..." : "Teszt üzenet küldése"}
               </button>
               <button
                 type="button"
                 className="home-btn-inline home-btn-inline--primary"
-                // TODO: ide jön majd a mentés backendre
               >
                 Mentés (UI only)
               </button>
             </div>
+
+            {testErr && (
+              <div className="home-info home-info--error home-log-info">
+                {testErr}
+              </div>
+            )}
+            {testMsg && (
+              <div className="home-info home-info--note home-log-info">
+                {testMsg}
+              </div>
+            )}
           </div>
 
           {/* JOBB – preview */}
@@ -1364,7 +1484,6 @@ function LogsSection({
     </section>
   );
 }
-
 
 function ComingSoonSection(props: { title: string; description: string }) {
   return (
