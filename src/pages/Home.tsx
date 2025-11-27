@@ -30,6 +30,16 @@ type LinkedGuildMeta = {
   attachedAt: number;
 };
 
+type LogsStatus = "idle" | "loading" | "ok" | "error";
+
+type BotLogEntry = {
+  id: string;
+  ts: number;
+  userTag: string;
+  commandName: string;
+  guildName?: string | null;
+};
+
 // Alap backend (health, guilds, stb.)
 const API_BASE = import.meta.env.VITE_API_URL as string;
 
@@ -67,6 +77,9 @@ export default function Home() {
       return {};
     }
   });
+
+  const [logs, setLogs] = useState<BotLogEntry[]>([]);
+  const [logsStatus, setLogsStatus] = useState<LogsStatus>("idle");
 
   // ---- backend health ----
   useEffect(() => {
@@ -158,6 +171,37 @@ export default function Home() {
       console.error("Nem sikerült menteni a linkedGuilds-et:", e);
     }
   }, [linkedGuilds]);
+
+  // ---- logok betöltése, amikor a Logok fül aktív ----
+  useEffect(() => {
+    if (activeTab !== "logs") return;
+
+    let aborted = false;
+
+    const run = async () => {
+      try {
+        setLogsStatus("loading");
+        const res = await fetch(`${BOT_API_BASE}/api/logs`);
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        if (aborted) return;
+
+        setLogsStatus("ok");
+        setLogs((data.logs as BotLogEntry[]) || []);
+      } catch (e) {
+        console.error(e);
+        if (!aborted) setLogsStatus("error");
+      }
+    };
+
+    run();
+
+    return () => {
+      aborted = true;
+    };
+  }, [activeTab]);
 
   const avatarUrl = user?.avatar
     ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`
@@ -700,10 +744,7 @@ export default function Home() {
         )}
 
         {activeTab === "logs" && (
-          <ComingSoonSection
-            title="Logok"
-            description="Moderációs logok, join/leave napló, parancshívások – részletes szűrők hamarosan."
-          />
+          <LogsSection logs={logs} status={logsStatus} />
         )}
       </div>
     </main>
@@ -865,6 +906,73 @@ function CommandCreator({
   );
 }
 
+function LogsSection({
+  logs,
+  status,
+}: {
+  logs: BotLogEntry[];
+  status: LogsStatus;
+}) {
+  return (
+    <section className="home-section">
+      <article className="home-card">
+        <h2 className="home-card-title">Logok</h2>
+        <p className="home-card-text">
+          Slash parancs használatok logja (teszt fázis) – ki, mikor, milyen
+          parancsot futtatott.
+        </p>
+
+        <div className="home-log-terminal">
+          <div className="home-log-header">
+            <span className="home-log-title">voidbot@panel</span>
+            <span className="home-log-status">
+              <span className="home-log-status-dot" />
+              connected
+            </span>
+          </div>
+
+          <div className="home-log-body">
+            {(status === "idle" || status === "loading") && (
+              <div className="home-log-line">$ logok betöltése…</div>
+            )}
+
+            {status === "error" && (
+              <div className="home-log-line home-log-line--error">
+                $ hiba: nem sikerült betölteni a logokat.
+              </div>
+            )}
+
+            {status === "ok" && logs.length === 0 && (
+              <>
+                <div className="home-log-line">$ connect discord</div>
+                <div className="home-log-line">
+                  ✔ még nincs logbejegyzés – futtasd a /ping vagy /web
+                  parancsot.
+                </div>
+              </>
+            )}
+
+            {status === "ok" &&
+              logs.map((log) => (
+                <div className="home-log-line" key={log.id}>
+                  <span className="home-log-prompt">$</span>{" "}
+                  <span>
+                    {new Date(log.ts).toLocaleTimeString("hu-HU", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    – <strong>{log.userTag}</strong> futtatta: /
+                    {log.commandName}
+                    {log.guildName ? ` @ ${log.guildName}` : ""}
+                  </span>
+                </div>
+              ))}
+          </div>
+        </div>
+      </article>
+    </section>
+  );
+}
 
 function ComingSoonSection(props: { title: string; description: string }) {
   return (

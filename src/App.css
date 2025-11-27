@@ -1208,3 +1208,79 @@ body {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+
+/* ========= LOG "TERMINAL" DOBOZ ========= */
+
+.home-log-terminal {
+  margin-top: 1rem;
+  border-radius: 24px;
+  background: radial-gradient(
+    140% 200% at 0% 0%,
+    #020617 0%,
+    #020617 40%,
+    #020617 100%
+  );
+  border: 1px solid #020617;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.home-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1.3rem;
+  background: #020617;
+  border-bottom: 1px solid #020617;
+}
+
+.home-log-title {
+  font-size: 0.9rem;
+  color: #e5e7eb;
+}
+
+.home-log-status {
+  font-size: 0.9rem;
+  color: #bbf7d0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.home-log-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.home-log-body {
+  padding: 1.1rem 1.4rem 1.2rem;
+  background: radial-gradient(
+    160% 260% at 0% 0%,
+    #020617 0%,
+    #020617 35%,
+    #020617 100%
+  );
+}
+
+.home-log-line {
+  font-size: 0.85rem;
+  color: #e5e7eb;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.home-log-line--error {
+  color: #fecaca;
+}
+
+.home-log-prompt {
+  color: #60a5fa;
+}
