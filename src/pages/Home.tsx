@@ -983,12 +983,12 @@ const LOG_EVENTS: {
   {
     id: "join",
     label: "Csatlakozás",
-    description: "Amikor játékos belép a FiveM szerverre",
+    description: "Amikor játékos belép a Voidbot szerverre",
   },
   {
     id: "leave",
     label: "Kilépés",
-    description: "Amikor játékos kilép a FiveM szerverről",
+    description: "Amikor játékos kilép a Voidbot szerverről",
   },
 ];
 
@@ -1379,9 +1379,9 @@ function LogsSection({
                 <div className="home-log-preview-body">
                   <p className="home-log-preview-description">
                     {currentTemplate.description
-                      .replaceAll("{discordTag}", "@unc.tonto")
+                      .replaceAll("{discordTag}", "@voidbo-kovacs")
                       .replaceAll("{serverId}", "2")
-                      .replaceAll("{reason}", "Exiting")
+                      .replaceAll("{reason}", "Kilépet")
                       .replaceAll("{postal}", "9151")
                       .replaceAll("{ping}", "22")
                       .replaceAll(
@@ -1403,9 +1403,9 @@ function LogsSection({
                           </div>
                           <div className="home-log-preview-field-value">
                             {field.value
-                              .replaceAll("{discordTag}", "@unc.tonto")
+                              .replaceAll("{discordTag}", "@voidbot-kovacs")
                               .replaceAll("{serverId}", "2")
-                              .replaceAll("{reason}", "Exiting")
+                              .replaceAll("{reason}", "Kilépet")
                               .replaceAll("{postal}", "9151")
                               .replaceAll("{ping}", "22")
                               .replaceAll(
