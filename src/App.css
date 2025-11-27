@@ -1284,3 +1284,391 @@ body {
 .home-log-prompt {
   color: #60a5fa;
 }
+
+
+/* ---------- LOGOK – fő layout ---------- */
+
+.home-log-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) minmax(320px, 420px) minmax(
+      280px,
+      360px
+    );
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 1100px) {
+  .home-log-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.home-log-col-left,
+.home-log-col-middle,
+.home-log-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ---------- címkék, small szöveg ---------- */
+
+.home-log-subtitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 0.25rem;
+}
+
+.home-log-small {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* ---------- Esemény lista (bal oszlop) ---------- */
+
+.home-log-event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.home-log-event-btn {
+  position: relative;
+  text-align: left;
+  border: 1px solid #1f2937;
+  background: #020617;
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease,
+    transform 0.05s ease;
+}
+
+.home-log-event-btn:hover {
+  border-color: #374151;
+  background: #020617;
+  transform: translateY(-1px);
+}
+
+.home-log-event-btn--active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35);
+}
+
+.home-log-event-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.home-log-event-desc {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.76rem;
+  color: #9ca3af;
+}
+
+/* ---------- Csatorna box ---------- */
+
+.home-log-channel-box {
+  margin-top: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.75rem;
+  background: #020617;
+  border: 1px solid #1f2937;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.home-log-channel-box h4 {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin: 0;
+}
+
+.home-log-channel-box select {
+  margin-top: 0.3rem;
+  background: #020617;
+  border: 1px solid #374151;
+  border-radius: 0.6rem;
+  padding: 0.4rem 0.55rem;
+  color: #e5e7eb;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.home-log-channel-box select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+
+/* ---------- Középső oszlop – form mezők ---------- */
+
+.home-log-field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.home-log-field {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.home-log-field label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #d1d5db;
+}
+
+.home-log-field input[type="text"],
+.home-log-field textarea {
+  background: #020617;
+  border-radius: 0.6rem;
+  border: 1px solid #1f2937;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.85rem;
+  color: #e5e7eb;
+  outline: none;
+  resize: vertical;
+  min-height: 2.35rem;
+}
+
+.home-log-field textarea {
+  min-height: 5rem;
+}
+
+.home-log-field input:focus,
+.home-log-field textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+
+.home-log-color-field .home-log-color-wrap {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.home-log-color-field input[type="color"] {
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* checkbox mező */
+
+.home-log-field-toggle {
+  align-items: flex-start;
+  max-width: 70px;
+}
+
+.home-log-field-toggle input[type="checkbox"] {
+  margin-top: 0.5rem;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+/* Mezők blokk */
+
+.home-log-fields-list {
+  margin-top: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.75rem;
+  border: 1px solid #1f2937;
+  background: #020617;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.home-log-fields-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.home-log-fields-header h4 {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+/* action gombok */
+
+.home-log-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- Jobb oszlop – preview ---------- */
+
+.home-log-preview {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.home-log-preview-border {
+  width: 4px;
+  border-radius: 999px;
+  background: #ef4444;
+}
+
+.home-log-preview-card {
+  flex: 1;
+  border-radius: 0.75rem;
+  background: #020617;
+  border: 1px solid #1f2937;
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.home-log-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-log-preview-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.home-log-preview-body {
+  font-size: 0.82rem;
+  color: #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.home-log-preview-description {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.home-log-preview-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.3rem;
+}
+
+.home-log-preview-field {
+  background: #0b1120;
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.45rem;
+}
+
+.home-log-preview-field-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.home-log-preview-field-value {
+  font-size: 0.78rem;
+  color: #e5e7eb;
+}
+
+.home-log-preview-footer {
+  border-top: 1px solid #111827;
+  padding-top: 0.35rem;
+  margin-top: 0.2rem;
+}
+
+.home-log-preview-footer-text {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* ---------- Terminal log nézet ---------- */
+
+.home-log-terminal {
+  margin-top: 1.75rem;
+  border-radius: 0.9rem;
+  background: #020617;
+  border: 1px solid #1f2937;
+  overflow: hidden;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 0.8rem;
+}
+
+.home-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.45rem 0.7rem;
+  background: #020617;
+  border-bottom: 1px solid #111827;
+}
+
+.home-log-title {
+  color: #e5e7eb;
+}
+
+.home-log-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: #22c55e;
+}
+
+.home-log-status-dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.home-log-body {
+  padding: 0.55rem 0.75rem;
+  max-height: 220px;
+  overflow-y: auto;
+  background: radial-gradient(circle at top left, #020617 0, #020617 40%, #000 100%);
+}
+
+.home-log-line {
+  color: #e5e7eb;
+  white-space: nowrap;
+}
+
+.home-log-line + .home-log-line {
+  margin-top: 0.15rem;
+}
+
+.home-log-line--error {
+  color: #f97373;
+}
+
+.home-log-prompt {
+  color: #22c55e;
+}
+
+/* kisebb képernyőn a preview card nyúljon 100% szélességre */
+@media (max-width: 640px) {
+  .home-log-preview {
+    flex-direction: row;
+  }
+}
