@@ -40,6 +40,26 @@ type BotLogEntry = {
   guildName?: string | null;
 };
 
+// ---- LOG TEMPLATE típusok a konfigurációhoz ----
+type LogEventType = "join" | "leave" | "death" | "chat" | "admin";
+
+type LogTemplateField = {
+  id: string;
+  label: string;
+  value: string;
+  enabled: boolean;
+};
+
+type LogTemplate = {
+  event: LogEventType;
+  channelId: string | null;
+  color: string;
+  title: string;
+  description: string;
+  footer: string;
+  fields: LogTemplateField[];
+};
+
 // Alap backend (health, guilds, stb.)
 const API_BASE = import.meta.env.VITE_API_URL as string;
 
@@ -906,6 +926,23 @@ function CommandCreator({
   );
 }
 
+// ---- LOGOK FÜL – konfiguráció + preview + terminal nézet ----
+
+const LOG_EVENTS: { id: LogEventType; label: string; description: string }[] = [
+  { id: "join", label: "Join", description: "Amikor játékos belép a szerverre" },
+  { id: "leave", label: "Leave", description: "Amikor játékos kilép a szerverről" },
+  { id: "death", label: "Death", description: "Halál / respawn log" },
+  { id: "chat", label: "Chat", description: "OOC / IC chat logok" },
+  { id: "admin", label: "Admin", description: "Kick / ban / warn log" },
+];
+
+// TODO: cseréld majd le backendről jövő csatornalistára
+const MOCK_CHANNELS = [
+  { id: "chan1", name: "#logok" },
+  { id: "chan2", name: "#admin-log" },
+  { id: "chan3", name: "#join-leave" },
+];
+
 function LogsSection({
   logs,
   status,
@@ -913,15 +950,443 @@ function LogsSection({
   logs: BotLogEntry[];
   status: LogsStatus;
 }) {
+  const [selectedEvent, setSelectedEvent] = useState<LogEventType>("leave");
+
+  const [templates, setTemplates] = useState<Record<LogEventType, LogTemplate>>(
+    () => ({
+      join: {
+        event: "join",
+        channelId: null,
+        color: "#22c55e",
+        title: "Join",
+        description: "{playerName} has joined the server.",
+        footer: "VOIDBOT logs • {timestamp}",
+        fields: [
+          {
+            id: "player",
+            label: "Player",
+            value: "{playerName}",
+            enabled: true,
+          },
+          {
+            id: "discord",
+            label: "Discord",
+            value: "{discordTag}",
+            enabled: true,
+          },
+          {
+            id: "serverId",
+            label: "Server ID",
+            value: "{serverId}",
+            enabled: true,
+          },
+        ],
+      },
+      leave: {
+        event: "leave",
+        channelId: null,
+        color: "#ef4444",
+        title: "Leave",
+        description: "{playerName} has left the server.",
+        footer: "VOIDBOT logs • {timestamp}",
+        fields: [
+          {
+            id: "reason",
+            label: "Reason",
+            value: "{reason}",
+            enabled: true,
+          },
+          {
+            id: "ping",
+            label: "Ping",
+            value: "{ping}ms",
+            enabled: true,
+          },
+          {
+            id: "postal",
+            label: "Nearest Postal",
+            value: "{postal}",
+            enabled: true,
+          },
+        ],
+      },
+      death: {
+        event: "death",
+        channelId: null,
+        color: "#a855f7",
+        title: "Death",
+        description: "{playerName} died. Cause: {cause}",
+        footer: "VOIDBOT logs • {timestamp}",
+        fields: [
+          {
+            id: "cause",
+            label: "Cause",
+            value: "{cause}",
+            enabled: true,
+          },
+          {
+            id: "weapon",
+            label: "Weapon",
+            value: "{weapon}",
+            enabled: false,
+          },
+          {
+            id: "location",
+            label: "Location",
+            value: "{postal}",
+            enabled: true,
+          },
+        ],
+      },
+      chat: {
+        event: "chat",
+        channelId: null,
+        color: "#3b82f6",
+        title: "Chat log",
+        description: "{discordTag}: {message}",
+        footer: "VOIDBOT logs • {timestamp}",
+        fields: [
+          {
+            id: "channel",
+            label: "Channel",
+            value: "{chatChannel}",
+            enabled: true,
+          },
+          {
+            id: "steam",
+            label: "Steam Hex",
+            value: "{steamHex}",
+            enabled: false,
+          },
+          {
+            id: "license",
+            label: "License",
+            value: "{license}",
+            enabled: false,
+          },
+        ],
+      },
+      admin: {
+        event: "admin",
+        channelId: null,
+        color: "#f97316",
+        title: "Admin action",
+        description: "{staffTag} used {action} on {playerName}",
+        footer: "VOIDBOT logs • {timestamp}",
+        fields: [
+          {
+            id: "staff",
+            label: "Staff",
+            value: "{staffTag}",
+            enabled: true,
+          },
+          {
+            id: "action",
+            label: "Action",
+            value: "{action}",
+            enabled: true,
+          },
+          {
+            id: "reason",
+            label: "Reason",
+            value: "{reason}",
+            enabled: true,
+          },
+        ],
+      },
+    })
+  );
+
+  const currentTemplate = templates[selectedEvent];
+
+  const updateTemplate = (patch: Partial<LogTemplate>) => {
+    setTemplates((prev) => ({
+      ...prev,
+      [selectedEvent]: {
+        ...prev[selectedEvent],
+        ...patch,
+      },
+    }));
+  };
+
+  const updateField = (fieldId: string, patch: Partial<LogTemplateField>) => {
+    setTemplates((prev) => {
+      const tpl = prev[selectedEvent];
+      const fields = tpl.fields.map((f) =>
+        f.id === fieldId ? { ...f, ...patch } : f
+      );
+      return {
+        ...prev,
+        [selectedEvent]: {
+          ...tpl,
+          fields,
+        },
+      };
+    });
+  };
+
   return (
     <section className="home-section">
       <article className="home-card">
         <h2 className="home-card-title">Logok</h2>
         <p className="home-card-text">
-          Slash parancs használatok logja (teszt fázis) – ki, mikor, milyen
-          parancsot futtatott.
+          Itt tudod beállítani, hogy a VOIDBOT milyen **Discord embed**-et
+          küldjön a kiválasztott log csatornába. Bal oldalt esemény típus,
+          középen beállítások, jobb oldalt élő előnézet.
         </p>
 
+        {/* FŐ LAYOUT – 3 oszlop */}
+        <div className="home-log-layout">
+          {/* BAL – esemény + csatorna */}
+          <div className="home-log-col-left">
+            <h3 className="home-log-subtitle">Esemény típus</h3>
+            <div className="home-log-event-list">
+              {LOG_EVENTS.map((ev) => (
+                <button
+                  key={ev.id}
+                  type="button"
+                  className={
+                    "home-log-event-btn" +
+                    (selectedEvent === ev.id ? " home-log-event-btn--active" : "")
+                  }
+                  onClick={() => setSelectedEvent(ev.id)}
+                >
+                  <span className="home-log-event-label">{ev.label}</span>
+                  <span className="home-log-event-desc">{ev.description}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="home-log-channel-box">
+              <h4>Log csatorna</h4>
+              <p className="home-log-small">
+                Melyik Discord text csatornába menjenek ezek a logok?
+              </p>
+              <select
+                value={currentTemplate.channelId ?? ""}
+                onChange={(e) =>
+                  updateTemplate({
+                    channelId: e.target.value || null,
+                  })
+                }
+              >
+                <option value="">Nincs beállítva</option>
+                {MOCK_CHANNELS.map((ch) => (
+                  <option key={ch.id} value={ch.id}>
+                    {ch.name}
+                  </option>
+                ))}
+              </select>
+              <p className="home-log-small">
+                {/* TODO: ha backendből jönnek a csatornák, itt tudjuk jelezni az éles állapotot */}
+                Később ezt a listát a szerver tényleges csatornáiból töltjük.
+              </p>
+            </div>
+          </div>
+
+          {/* KÖZÉP – template beállítás */}
+          <div className="home-log-col-middle">
+            <h3 className="home-log-subtitle">Embed beállítások</h3>
+
+            <div className="home-log-field-row">
+              <div className="home-log-field">
+                <label>Cím</label>
+                <input
+                  type="text"
+                  value={currentTemplate.title}
+                  onChange={(e) =>
+                    updateTemplate({ title: e.target.value })
+                  }
+                  placeholder="pl. Leave"
+                />
+              </div>
+
+              <div className="home-log-field home-log-color-field">
+                <label>Szín</label>
+                <div className="home-log-color-wrap">
+                  <input
+                    type="color"
+                    value={currentTemplate.color}
+                    onChange={(e) =>
+                      updateTemplate({ color: e.target.value })
+                    }
+                  />
+                  <input
+                    type="text"
+                    value={currentTemplate.color}
+                    onChange={(e) =>
+                      updateTemplate({ color: e.target.value })
+                    }
+                    placeholder="#ef4444"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="home-log-field">
+              <label>Leírás / fő szöveg</label>
+              <textarea
+                rows={3}
+                value={currentTemplate.description}
+                onChange={(e) =>
+                  updateTemplate({ description: e.target.value })
+                }
+                placeholder="{playerName} has left the server."
+              />
+              <small className="home-log-small">
+                Használható változók:{" "}
+                <code>{`{playerName} {discordTag} {reason} {serverId} {postal} {ping} {timestamp} ...`}</code>
+              </small>
+            </div>
+
+            <div className="home-log-fields-list">
+              <div className="home-log-fields-header">
+                <h4>Mezők</h4>
+                <span className="home-log-small">
+                  Ezek lesznek az embed “fieldjei” (Player, Ping, License, stb.)
+                </span>
+              </div>
+
+              {currentTemplate.fields.map((field) => (
+                <div className="home-log-field-row" key={field.id}>
+                  <div className="home-log-field">
+                    <label>Label</label>
+                    <input
+                      type="text"
+                      value={field.label}
+                      onChange={(e) =>
+                        updateField(field.id, { label: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="home-log-field">
+                    <label>Érték</label>
+                    <input
+                      type="text"
+                      value={field.value}
+                      onChange={(e) =>
+                        updateField(field.id, { value: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="home-log-field home-log-field-toggle">
+                    <label>Aktív</label>
+                    <input
+                      type="checkbox"
+                      checked={field.enabled}
+                      onChange={(e) =>
+                        updateField(field.id, { enabled: e.target.checked })
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="home-log-field">
+              <label>Footer</label>
+              <input
+                type="text"
+                value={currentTemplate.footer}
+                onChange={(e) =>
+                  updateTemplate({ footer: e.target.value })
+                }
+                placeholder="VOIDBOT logs • {timestamp}"
+              />
+            </div>
+
+            <div className="home-log-actions">
+              <button
+                type="button"
+                className="home-btn-inline home-btn-inline--ghost"
+                // TODO: ide jön majd a "teszt üzenet küldése" backend hívás
+              >
+                Teszt üzenet küldése
+              </button>
+              <button
+                type="button"
+                className="home-btn-inline home-btn-inline--primary"
+                // TODO: ide jön majd a mentés backendre
+              >
+                Mentés (csak UI, teszt)
+              </button>
+            </div>
+          </div>
+
+          {/* JOBB – preview */}
+          <div className="home-log-col-right">
+            <h3 className="home-log-subtitle">Előnézet</h3>
+            <p className="home-log-small">
+              Így fog kinézni a log üzenet a Discord csatornában.
+            </p>
+
+            <div className="home-log-preview">
+              <div
+                className="home-log-preview-border"
+                style={{ backgroundColor: currentTemplate.color }}
+              />
+              <div className="home-log-preview-card">
+                <div className="home-log-preview-header">
+                  <span className="home-log-preview-title">
+                    {currentTemplate.title || "Leave"}
+                  </span>
+                </div>
+
+                <div className="home-log-preview-body">
+                  <p className="home-log-preview-description">
+                    {/* mock adatokkal renderelt description */}
+                    {currentTemplate.description
+                      .replaceAll("{playerName}", "tontoo__x3")
+                      .replaceAll("{reason}", "Exiting")
+                      .replaceAll("{discordTag}", "@unc.tonto")
+                      .replaceAll("{serverId}", "2")
+                      .replaceAll("{postal}", "9151")
+                      .replaceAll("{ping}", "22")
+                      .replaceAll("{timestamp}", "2024. 04. 18. 13:33")}
+                  </p>
+
+                  <div className="home-log-preview-fields">
+                    {currentTemplate.fields
+                      .filter((f) => f.enabled)
+                      .map((field) => (
+                        <div
+                          key={field.id}
+                          className="home-log-preview-field"
+                        >
+                          <div className="home-log-preview-field-label">
+                            {field.label}
+                          </div>
+                          <div className="home-log-preview-field-value">
+                            {field.value
+                              .replaceAll("{playerName}", "tontoo__x3")
+                              .replaceAll("{discordTag}", "@unc.tonto")
+                              .replaceAll("{serverId}", "2")
+                              .replaceAll("{postal}", "9151")
+                              .replaceAll("{ping}", "22")
+                              .replaceAll("{reason}", "Exiting")
+                              .replaceAll(
+                                "{timestamp}",
+                                "2024. 04. 18. 13:33"
+                              )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+
+                <div className="home-log-preview-footer">
+                  <span className="home-log-preview-footer-text">
+                    {currentTemplate.footer
+                      .replaceAll("{timestamp}", "2024. 04. 18. 13:33") ||
+                      "VOIDBOT logs • 2024. 04. 18. 13:33"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* TERMINAL NÉZET – meglévő log lista */}
         <div className="home-log-terminal">
           <div className="home-log-header">
             <span className="home-log-title">voidbot@panel</span>
