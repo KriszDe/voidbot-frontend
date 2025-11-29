@@ -362,10 +362,10 @@ export default function Home() {
   };
   // -----------------------------------
 
-  return (
-    <main className="home-root">
-      {/* BELÉPÉSI KÓD MODAL */}
-      {codeGateOpen && (
+  // ⬇⬇⬇ CSAK A KÓDOS KÉPERNYŐ, AMÍG NINCS JÓ KÓD ⬇⬇⬇
+  if (codeGateOpen) {
+    return (
+      <main className="home-root">
         <div className="code-gate-backdrop">
           <div className="code-gate-modal">
             <h2 className="code-gate-title">Belépési kód</h2>
@@ -394,9 +394,13 @@ export default function Home() {
             </p>
           </div>
         </div>
-      )}
-      {/* /BELÉPÉSI KÓD MODAL */}
+      </main>
+    );
+  }
+  // ⬆⬆⬆ CSAK A KÓDOS KÉPERNYŐ, AMÍG NINCS JÓ KÓD ⬆⬆⬆
 
+  return (
+    <main className="home-root">
       {/* HERO – sötét rész, mint a landing teteje */}
       <section className="home-hero">
         <div className="home-hero-shell">
