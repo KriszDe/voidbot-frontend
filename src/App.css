@@ -1672,3 +1672,84 @@ body {
     flex-direction: row;
   }
 }
+
+
+.code-gate-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75); /* sötét áttetsző overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.code-gate-modal {
+  background: #020617;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.6);
+}
+
+.code-gate-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #e5e7eb;
+}
+
+.code-gate-text {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-bottom: 1.5rem;
+}
+
+.code-gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.code-gate-input {
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.6rem;
+  border: 1px solid #4b5563;
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.code-gate-input:focus {
+  border-color: #6366f1;
+}
+
+.code-gate-button {
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.6rem;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: white;
+  cursor: pointer;
+}
+
+.code-gate-button:hover {
+  opacity: 0.95;
+}
+
+.code-gate-error {
+  font-size: 0.8rem;
+  color: #f97373;
+}
+
+.code-gate-hint {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+}

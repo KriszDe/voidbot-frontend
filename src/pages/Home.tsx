@@ -82,6 +82,15 @@ export default function Home() {
 
   const [user, setUser] = useState<DiscordUser | null>(null);
 
+  // ---- belépési kód popup state ----
+  const [codeGateOpen, setCodeGateOpen] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("voidbot_code_ok") === "1" ? false : true;
+  });
+  const [codeInput, setCodeInput] = useState("");
+  const [codeError, setCodeError] = useState<string | null>(null);
+  // -----------------------------------
+
   const [guildsStatus, setGuildsStatus] = useState<GuildsStatus>("idle");
   const [guilds, setGuilds] = useState<DiscordGuild[]>([]);
   const [guildError, setGuildError] = useState<string | null>(null);
@@ -337,8 +346,57 @@ export default function Home() {
 
   const totalGuilds = guilds.length;
 
+  // ---- belépési kód ellenőrzése ----
+  const handleCodeSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setCodeError(null);
+
+    const correctCode = "Test1234"; // itt tudod átírni a kódot
+
+    if (codeInput === correctCode) {
+      localStorage.setItem("voidbot_code_ok", "1");
+      setCodeGateOpen(false);
+    } else {
+      setCodeError("Hibás kód. Próbáld újra!");
+    }
+  };
+  // -----------------------------------
+
   return (
     <main className="home-root">
+      {/* BELÉPÉSI KÓD MODAL */}
+      {codeGateOpen && (
+        <div className="code-gate-backdrop">
+          <div className="code-gate-modal">
+            <h2 className="code-gate-title">Belépési kód</h2>
+            <p className="code-gate-text">
+              Add meg a hozzáférési kódot a VOIDBOT panel használatához.
+            </p>
+
+            <form onSubmit={handleCodeSubmit} className="code-gate-form">
+              <input
+                type="password"
+                className="code-gate-input"
+                placeholder="Pl. Test1234"
+                value={codeInput}
+                onChange={(e) => setCodeInput(e.target.value)}
+              />
+              {codeError && (
+                <div className="code-gate-error">{codeError}</div>
+              )}
+              <button type="submit" className="code-gate-button">
+                Belépés
+              </button>
+            </form>
+
+            <p className="code-gate-hint">
+              Demo kód: <code>Test1234</code>
+            </p>
+          </div>
+        </div>
+      )}
+      {/* /BELÉPÉSI KÓD MODAL */}
+
       {/* HERO – sötét rész, mint a landing teteje */}
       <section className="home-hero">
         <div className="home-hero-shell">
