@@ -1,4 +1,5 @@
-import { useState } from "react";
+// src/App.tsx (vagy ahol ez a komponens van)
+import { FormEvent, useState } from "react";
 
 type HealthResponse = {
   ok: boolean;
@@ -15,6 +16,12 @@ export default function App() {
   const [pingData, setPingData] = useState<HealthResponse | null>(null);
   const [pingError, setPingError] = useState<string | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
+
+  // ---- belépési kód state – mindig kérje, nincs localStorage ----
+  const [codeGateOpen, setCodeGateOpen] = useState<boolean>(true);
+  const [codeInput, setCodeInput] = useState("");
+  const [codeError, setCodeError] = useState<string | null>(null);
+  // ---------------------------------------------------------------
 
   const handlePingBackend = async () => {
     try {
@@ -51,6 +58,59 @@ export default function App() {
     window.location.href = url;
   };
 
+  // ---- belépési kód ellenőrzés ----
+  const handleCodeSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setCodeError(null);
+
+    const correctCode = "Test1234"; // itt tudod átírni a kódot
+
+    if (codeInput === correctCode) {
+      setCodeGateOpen(false);
+      setCodeInput("");
+    } else {
+      setCodeError("Hibás kód. Próbáld újra!");
+    }
+  };
+  // ---------------------------------
+
+  // AMÍG NINCS JÓ KÓD, CSAK A CODE SCREEN LÁTSZIK
+  if (codeGateOpen) {
+    return (
+      <div className="bot-page">
+        <div className="code-gate-backdrop">
+          <div className="code-gate-modal">
+            <h2 className="code-gate-title">Belépési kód</h2>
+            <p className="code-gate-text">
+              Add meg a hozzáférési kódot a VOIDBOT oldal használatához.
+            </p>
+
+            <form onSubmit={handleCodeSubmit} className="code-gate-form">
+              <input
+                type="password"
+                className="code-gate-input"
+                placeholder="Pl. Test1234"
+                value={codeInput}
+                onChange={(e) => setCodeInput(e.target.value)}
+              />
+              {codeError && (
+                <div className="code-gate-error">{codeError}</div>
+              )}
+              <button type="submit" className="code-gate-button">
+                Belépés
+              </button>
+            </form>
+
+            <p className="code-gate-hint">
+              Demo kód: <code>Test1234</code>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // HA JÓ A KÓD, AKKOR JÖN A RÉGI LANDING
   return (
     <div className="bot-page">
       {/* NAVBAR */}
@@ -294,7 +354,9 @@ $ setup wizard
       </main>
 
       <footer className="bot-footer">
-        <span>© {new Date().getFullYear()} VOIDBOT • retro discord bot panel</span>
+        <span>
+          © {new Date().getFullYear()} VOIDBOT • retro discord bot panel
+        </span>
         <span>Made for personal use · HU</span>
       </footer>
     </div>
